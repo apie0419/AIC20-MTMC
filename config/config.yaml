@@ -1,0 +1,9 @@
+PATH:
+  ROOT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
+  INPUT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3/train"
+  RESNET_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth"
+  REID_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_t2+veri.pth"
+
+DEVICE:
+  TYPE: "cuda" 
+  GPU: 1

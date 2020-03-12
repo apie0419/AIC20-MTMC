@@ -3,14 +3,16 @@
 # 匹配跨视频的track
 # 19
 import numpy as np
-import os
-import math
-import operator
+import os, math, operator, sys
 from matplotlib import pyplot as plt
+
+sys.path.append("..")
+
+from config import cfg
 
 MATCHED = True
 NO_MATCHED = False
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
+input_dir = cfg.PATH.INPUT_PATH
 
 INNER_SIMILAR_TH = 10
 MOVE_TH = 4  # todo 待修订

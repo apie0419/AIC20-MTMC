@@ -1,12 +1,6 @@
-# encoding: utf-8
-"""
-@author:  sherlock
-@contact: sherlockliao01@gmail.com
-"""
-
 import logging
 
-import torch
+import torch, os
 from ignite.engine import Engine, Events
 from ignite.handlers import ModelCheckpoint, Timer
 from ignite.metrics import RunningAverage
@@ -96,6 +90,10 @@ def do_train(
     output_dir = cfg.OUTPUT_DIR
     device = cfg.MODEL.DEVICE
     epochs = cfg.SOLVER.MAX_EPOCHS
+    if device == "cuda":
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(cfg.MODEL.CUDA)
+        torch.cuda.set_device(0)
+        
 
     logger = logging.getLogger("reid_baseline.train")
     logger.info("Start training")
@@ -145,5 +143,4 @@ def do_train(
             logger.info("mAP: {:.1%}".format(mAP))
             for r in [1, 5, 10]:
                 logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-
     trainer.run(train_loader, max_epochs=epochs)

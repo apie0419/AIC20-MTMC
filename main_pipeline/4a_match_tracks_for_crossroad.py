@@ -4,14 +4,16 @@
 # 13,527
 #
 import numpy as np
-import os
-import math
-import sys
+import os, math, sys
+
+sys.path.append("..")
+
+from config import cfg
 
 MATCHED = True
 NO_MATCHED = False
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
-out_path = "/home/apie/AIC20_track3/mtmc-vt/src/submission_crossroad_train"
+input_dir = cfg.PATH.INPUT_PATH
+out_path = os.path.join(cfg.PATH.ROOT_PATH, "submission_crossroad_train")
 
 INNER_SIMILAR_TH = 10
 TIME_TH = 4.5

@@ -1,9 +1,11 @@
 import numpy as np
-import os, cv2
+import os, cv2, sys
 
+sys.path.append("..")
 
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-IMAGE_PATH = os.path.join(BASE_PATH, "../dataset/AIC20_T3/train")
+from config import cfg
+
+INPUT_PATH = cfg.PATH.INPUT_PATH
 
 IMAGE_SIZE = 224
 TH_SCORE = 0.5
@@ -11,7 +13,6 @@ PAD_SIZE = 10
 IOU_TH = 0.7
 W_PAD = 0
 H_PAD = 0
-
 
 def analysis_transfrom_mat(cali_path):
     first_line = open(cali_path).readlines()[0].strip('\r\n')
@@ -160,9 +161,9 @@ def main():
     IMAGE_COUNT = 0
 
     scene_dirs = []
-    scene_fds = os.listdir(IMAGE_PATH)
+    scene_fds = os.listdir(INPUT_PATH)
     for scene_fd in scene_fds:
-        scene_dirs.append(os.path.join(IMAGE_PATH, scene_fd))
+        scene_dirs.append(os.path.join(INPUT_PATH, scene_fd))
 
     for scene_dir in scene_dirs:
         camera_dirs = []

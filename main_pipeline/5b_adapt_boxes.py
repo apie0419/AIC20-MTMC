@@ -5,15 +5,16 @@
 """
 """
 import numpy as np
-import os
-import cv2
-import glob
-import shutil
-import time
+import os, cv2, sys
 
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
-sub_path = "/home/apie/AIC20_track3/mtmc-vt/src/submission"
-res_path = "/home/apie/AIC20_track3/mtmc-vt/src/submission_adpt"
+sys.path.append("..")
+
+from config import cfg
+
+input_dir = cfg.PATH.INPUT_PATH
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+sub_path = os.path.join(BASE_PATH, "submission")
+res_path = os.path.join(BASE_PATH, "submission_adpt")
 th = 25
 
 

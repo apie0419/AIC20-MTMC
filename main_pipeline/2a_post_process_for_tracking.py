@@ -3,9 +3,11 @@
 # 预处理每个视频中检测到的track
 # 修改21, 425, 428
 import numpy as np
-import os
-import cv2
-import math
+import os, cv2, math, sys
+
+sys.path.append("..")
+
+from config import cfg
 
 MATCHED = True
 NO_MATCHED = False
@@ -15,8 +17,8 @@ TRACK_TH = 2
 MOVE_TH = 20000
 eps = 0.000001
 
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
-time_stamp_dir = '/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/cam_timestamp'
+input_dir = cfg.PATH.INPUT_PATH
+time_stamp_dir = os.path.join(cfg.PATH.ROOT_PATH, 'cam_timestamp')
 fps_file = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/cam_timestamp/train_fps.txt"
 filenames = [scene + ".txt" for scene in os.listdir(input_dir)]
 

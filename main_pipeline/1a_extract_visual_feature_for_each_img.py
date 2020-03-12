@@ -7,13 +7,15 @@ from PIL              import Image
 sys.path.append("..")
 
 from model.baseline import Baseline
+from config         import cfg
 
-torch.cuda.set_device(1)
+PRETRAIN_PATH = cfg.PATH.RESNET_PRETRAIN_MODEL_PATH
+WEIGHT        = cfg.PATH.REID_MODEL_PATH
+INPUT_DIR     = cfg.PATH.INPUT_PATH
+DEVICE        = cfg.DEVICE.TYPE
+if DEVICE == "cuda":
+    torch.cuda.set_device(cfg.DEVICE.GPU)  
 
-PRETRAIN_PATH = '/home/apie/AIC20_track3/mtmc-vt/src/model/resnet50-19c8e357.pth'
-WEIGHT        = "/home/apie/AIC20_track3/mtmc-vt/src/model/resnet50_model_120.pth"
-INPUT_DIR     = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
-DEVICE        = "cuda"  # cuda or cpu
 PIXEL_MEAN = [0.485, 0.456, 0.406]
 PIXEL_STD  = [0.229, 0.224, 0.225]
 SIZE_TRAIN = [256,256]
@@ -23,7 +25,6 @@ PADDING       = 10
 LAST_STRIDE   = 1
 NUM_WORKERS   = 8
 IMS_PER_BATCH = 64
-NUM_CLASSES   = 128
 
 class RandomErasing(object):
     
@@ -108,8 +109,10 @@ def build_transforms():
     return transform
 
 def build_model():
+    weight = torch.load(WEIGHT)
+    NUM_CLASSES = weight["classifier.weight"].shape[0]
     model = Baseline(NUM_CLASSES, LAST_STRIDE, PRETRAIN_PATH)
-    model.load_state_dict(torch.load(WEIGHT))
+    model.load_state_dict(weight)
     return model
 
 def _process_data():

@@ -1,7 +1,8 @@
 MODEL:
-  PRETRAIN_PATH: '/home/apie/projects/mtmc/model/resnet50-19c8e357.pth'
+  PRETRAIN_PATH: '/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth'
   DEVICE: "cuda"
   NAME: "resnet50"
+  CUDA: 2
 
 INPUT:
   SIZE_TRAIN: [256,256]
@@ -24,7 +25,7 @@ SOLVER:
   BIAS_LR_FACTOR: 1
   WEIGHT_DECAY: 0.0005
   WEIGHT_DECAY_BIAS: 0.0005
-  IMS_PER_BATCH: 64
+  IMS_PER_BATCH: 32
 
   STEPS: [40, 70]
   GAMMA: 0.1
@@ -41,6 +42,6 @@ TEST:
   IMS_PER_BATCH: 256 
   WEIGHT: "path"
 
-OUTPUT_DIR: "/home/apie/AIC20_track3/mtmc-vt/src/reid_baseline/export_dir/veri+t2"
+OUTPUT_DIR: "/home/apie/AIC20_track3/AIC20_MTMC/reid_baseline/export_dir/veri+t2"
 
 

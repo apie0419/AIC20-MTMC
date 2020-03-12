@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-# author: peilun
-# 转为提交格式
-"""
-"""
+import os
 
-input_path = "/home/apie/AIC20_track3/mtmc-vt/src/submission_adpt"
-out_path = "/home/apie/AIC20_track3/mtmc-vt/src/track1.txt"
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
+input_path = os.path.join(BASE_PATH, "submission_adpt")
+out_path = os.path.join(BASE_PATH, "track3.txt")
 
 f = open(out_path, 'w')
 lines = open(input_path).readlines()

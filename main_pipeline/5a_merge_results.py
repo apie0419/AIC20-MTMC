@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from numpy import random
-import os
-import glob
-import shutil
-import time
+import os, sys
 
+sys.path.append("..")
 
-input1 = "/home/apie/AIC20_track3/mtmc-vt/src/submission_crossroad_train"
-input2 = "/home/apie/AIC20_track3/mtmc-vt/src/submission_normal_train"
-out = "/home/apie/AIC20_track3/mtmc-vt/src/submission"
+from config import cfg
 
+input1 = os.path.join(cfg.PATH.ROOT_PATH, "submission_crossroad_train")
+input2 = os.path.join(cfg.PATH.ROOT_PATH, "submission_normal_train")
+out = os.path.join(cfg.PATH.ROOT_PATH, "submission")
 
 f = open(out, 'w')
 

@@ -8,7 +8,7 @@ class aic20_t3(BaseImageDataset):
 
     def __init__(self, **kwargs):
         super(aic20_t3, self).__init__()
-        self.root      = "/home/apie/projects/mtmc/dataset/AIC20_T3"
+        self.root      = "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
         self.train_dir = os.path.join(self.root, 'train')
         self.test_dir  = os.path.join(self.root, "test")
 

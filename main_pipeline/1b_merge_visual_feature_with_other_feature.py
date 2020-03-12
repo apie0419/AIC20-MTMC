@@ -3,9 +3,13 @@
 # 特征融合
 # 15
 import numpy as np
-import os
+import os, sys
 
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
+sys.path.append("..")
+
+from config import cfg
+
+input_dir = cfg.PATH.INPUT_PATH
 
 
 def load_ft_file(feature_file):

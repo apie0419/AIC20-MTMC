@@ -9,7 +9,7 @@ class veri(BaseImageDataset):
 
     def __init__(self, **kwargs):
         super(veri, self).__init__()
-        self.root      = "/home/apie/projects/mtmc/dataset/VeRi"
+        self.root      = "/home/apie/projects/AIC20-MTMC/dataset/VERI"
         self.train_dir = os.path.join(self.root, 'image_train')
         self.test_dir  = os.path.join(self.root, "image_test")
         self.query_dir = os.path.join(self.root, "image_query")

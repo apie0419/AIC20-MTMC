@@ -19,6 +19,7 @@ _C = CN()
 _C.MODEL = CN()
 _C.MODEL.DEVICE = "cuda"
 _C.MODEL.NAME = 'resnet50'
+_C.MODEL.CUDA = 1
 _C.MODEL.LAST_STRIDE = 1
 _C.MODEL.PRETRAIN_PATH = ''
 # -----------------------------------------------------------------------------

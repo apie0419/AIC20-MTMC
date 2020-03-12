@@ -3,16 +3,18 @@
 # 匹配跨视频的track
 # 13,610
 import numpy as np
-import os
-import math
-import sys
+import os, math, sys
 
+sys.path.append("..")
+
+from config import cfg
 
 MATCHED = True
 NO_MATCHED = False
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
-ard_uesd_num_path = "./already_used_number.txt"
-out_path = "/home/apie/AIC20_track3/mtmc-vt/src/submission_normal_train"
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+input_dir = cfg.PATH.INPUT_PATH
+ard_uesd_num_path = os.path.join(BASE_PATH, "already_used_number.txt")
+out_path = os.path.join(cfg.PATH.ROOT_PATH, "submission_normal_train")
 
 INNER_SIMILAR_TH = 10
 TIME_TH = 4
@@ -647,10 +649,6 @@ def main():
     for scene_fd in scene_fds:
         scene_dirs.append(os.path.join(input_dir, scene_fd))
     for scene_dir in scene_dirs:
-        if scene_dir == './aic19-track1-mtmc/train/S01':
-            continue
-        # if scene_dir == './aic19-track1-mtmc/test/S02':
-        #     continue
 
         track_groups_list = []
         camera_dirs = []

@@ -3,12 +3,16 @@
 """
 """
 import numpy as np
-import os
-import cv2
+import os, cv2, sys
 from scipy.optimize import linear_sum_assignment
 
-input_dir = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/AIC20_T3/train"
-ard_uesd_num_path = "/home/apie/AIC20_track3/mtmc-vt/src/main_pipeline/already_used_number.txt"
+sys.path.append("..")
+
+from config import cfg
+
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+input_dir = cfg.PATH.INPUT_PATH
+ard_uesd_num_path = os.path.join(BASE_PATH, "already_used_number.txt")
 
 IMAGE_SIZE = 224
 TH_SCORE = 0.3
