@@ -12,9 +12,8 @@ sys.path.append("..")
 from config import cfg
 
 input_dir = cfg.PATH.INPUT_PATH
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-sub_path = os.path.join(BASE_PATH, "submission")
-res_path = os.path.join(BASE_PATH, "submission_adpt")
+sub_path = os.path.join(cfg.PATH.ROOT_PATH, "submission")
+res_path = os.path.join(cfg.PATH.ROOT_PATH, "submission_adpt")
 th = 25
 
 
@@ -48,7 +47,8 @@ vdo_size_dict = {}
 scene_dirs = []
 scene_fds = os.listdir(input_dir)
 for scene_fd in scene_fds:
-    scene_dirs.append(os.path.join(input_dir, scene_fd))
+    if scene_fd.startswith("S0"):
+        scene_dirs.append(os.path.join(input_dir, scene_fd))
 for scene_dir in scene_dirs:
     camera_dirs = []
     fds = os.listdir(scene_dir)

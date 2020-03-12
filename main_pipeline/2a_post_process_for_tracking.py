@@ -19,7 +19,6 @@ eps = 0.000001
 
 input_dir = cfg.PATH.INPUT_PATH
 time_stamp_dir = os.path.join(cfg.PATH.ROOT_PATH, 'cam_timestamp')
-fps_file = "/home/apie/AIC20_track3/mtmc-vt/src/dataset/cam_timestamp/train_fps.txt"
 filenames = [scene + ".txt" for scene in os.listdir(input_dir)]
 
 PAD_SIZE = 10
@@ -387,35 +386,16 @@ def analysis_transfrom_mat(cali_path):
     return inv_transfrom_mat
 
 
-def load_fps_dict(fps_file):
-    fps_dict = {}
-    lines = open(fps_file).readlines()
-    for line in lines:
-        words = line.split()
-        cam = words[0]
-        fps = float(words[1])
-        fps_dict[cam] = fps
-    return fps_dict
-
-
 def main():
     scene_dirs = []
     scene_fds = os.listdir(input_dir)
     for scene_fd in scene_fds:
-        scene_dirs.append(os.path.join(input_dir, scene_fd))
+        if scene_fd.startswith("S0"):
+            scene_dirs.append(os.path.join(input_dir, scene_fd))
 
-    # time_stamp_file = './aic19-track1-mtmc/cam_timestamp/eval.txt'
     time_stamp_dict = analysis_time_stamp()
-    # fps_file = "./aic19-track1-mtmc/cam_timestamp/eval_fps.txt"
-    fps_dict = load_fps_dict(fps_file)
-
-    for k in fps_dict:
-        print(k, fps_dict[k])
-
+    
     for scene_dir in scene_dirs:
-        # if scene_dir != './aic19-track1-mtmc/test/S02':
-        #     continue
-
         camera_dirs = []
         fds = os.listdir(scene_dir)
         for fd in fds:
@@ -423,12 +403,9 @@ def main():
                 camera_dirs.append(os.path.join(scene_dir, fd))
 
         for camera_dir in camera_dirs:  # todo 控制开关
-            # print camera_dir
-            # if camera_dir != './aic19-track1-mtmc/test/S02/c007':
-            #     continue
             print(camera_dir)
 
-            cali_path = camera_dir + '/calibration.txt'
+            cali_path = os.path.join(camera_dir, 'calibration.txt')
             trans_mat = analysis_transfrom_mat(cali_path)
 
             cam = camera_dir.split('/')[-1]
@@ -436,7 +413,7 @@ def main():
             cap = cv2.VideoCapture(vdo_path)
             # fps
             time_stamp = time_stamp_dict[cam]
-            fps = fps_dict[cam]
+            fps = cv2.VideoCapture(vdo_path).get(cv2.CAP_PROP_FPS)
 
             track_path = os.path.join(camera_dir, 'det_reid_track.txt')
             roi_path = os.path.join(camera_dir, 'roi.jpg')

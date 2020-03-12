@@ -647,7 +647,8 @@ def main():
     f = open(out_path, 'w')
 
     for scene_fd in scene_fds:
-        scene_dirs.append(os.path.join(input_dir, scene_fd))
+        if scene_fd.startswith("S0"):
+            scene_dirs.append(os.path.join(input_dir, scene_fd))
     for scene_dir in scene_dirs:
 
         track_groups_list = []

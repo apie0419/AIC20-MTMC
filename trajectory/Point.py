@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from configs import SMOOTH_DIS
+
 class Point(object):
     '''
     point:

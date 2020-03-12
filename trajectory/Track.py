@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-from Point import Point
+from . import Point
 import numpy as np
-# import matplotlib.pyplot as plt
-# from matplotlib import animation
-# from matplotlib import style
-from configs import SLICE_THRESHOLD, DIRECTION_THRESHOLD
-from configs import COS_DIS_SAME_DIRECTION, COS_DIS_OPP_DIRECTION
-from configs import OUTLIER_DIS
-from configs import MIN_DIS_THRESHOLD
-from configs import SPEED_THRESHOLD
 
+OUTLIER_DIS = 0.007
+SLICE_THRESHOLD = 10
+DIRECTION_THRESHOLD = 10
+COS_DIS_SAME_DIRECTION = 0.93
+COS_DIS_OPP_DIRECTION = -0.5 
+MIN_DIS_THRESHOLD = 10 
+SPEED_THRESHOLD = 80
 
 def cos_vector(vec_1, vec_2):
     '''
@@ -181,37 +180,6 @@ class Track(object):
 
         self.sequence.sort(key=lambda x: x.t)
 
-    # def visualization(self):
-    #     #对一条track做可视化
-    #     #每一帧加一个点
-    #     style.use('fivethirtyeight')
-    #
-    #     fig = plt.figure(figsize=(20, 10), facecolor='white')
-    #     ax = plt.gca()
-    #     #color = np.ones((n, 4)) * (0, 0, 0, 1)
-    #
-    #     plt.xlim((6000, 9000))
-    #     plt.ylim((2000, 5000))
-    #     # 设置x轴、y轴名称
-    #     ax.set_xlabel('gps-x')
-    #     ax.set_ylabel('gps-y')
-    #
-    #     def animate(point_number):
-    #         pos_list = [self.sequence[point_number].x, self.sequence[point_number].y]
-    #         # scale
-    #         x = int(pos_list[0] * 1e5 - 42490000)
-    #         y = int(pos_list[1] * 1e5 - 90670000)
-    #
-    #         scat = ax.scatter(x, y, s=10, c='r', lw=0.5)
-    #         # plt.pause(1)
-    #         return scat,
-    #
-    #     ani = animation.FuncAnimation(fig, animate, interval=40, frames=len(self.sequence),repeat=False)
-    #     plt.draw()
-    #     plt.pause(30)
-    #     plt.close()
-    #     return plt
-
     def get_middle_point(self, begin, end, step=1):
         # 算一个点列表的中间坐标，代表这个点
         # 返回[x,y,t]
@@ -332,26 +300,6 @@ class Track(object):
         else:
             return [99]
 
-        # x1 = self.sequence[-1].x * 1e5
-        # y1 = self.sequence[-1].y * 1e5
-        # if len(track_2.sequence) == 0:
-        #     print(track_2.id)
-        # x2 = track_2.sequence[0].x * 1e5
-        # y2 = track_2.sequence[0].y * 1e5
-        #
-        # dis = ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) ** 0.5
-        # if self.valid_speed != 0:
-        #     time = dis / self.valid_speed
-        #
-        # #0430 time modified
-        # vector_between_track = [(track_2.sequence[0].x - self.sequence[-1].x),
-        #                         (track_2.sequence[0].y - self.sequence[-1].y)]
-        # cos_dis = cos_vector(self.move_vector, vector_between_track)
-        # if cos_dis < 0:
-        #     time = -time
-        #
-        # return [time]
-
     def angle_with_another_track_coarse(self, track_2):  # 使用首尾的方向向量，用于验证
         if len(self.sequence) == 1 or len(track_2.sequence) == 1:
             return [0, 0, 0]
@@ -360,109 +308,3 @@ class Track(object):
                  (track_2.sequence[1].y - track_2.sequence[0].y) * 1e5]
         cos = cos_vector(vec_1, vec_2)
         return [cos, cos, cos]
-
-
-'''
-
-    def get_mean_vector_last_10(self):
-        #todo 如果最后几秒钟停下不运动怎么办
-        mean_vector = [0,0]
-        length = len(self.sequence)#可以优化的吧
-        if length <= 1:
-            return mean_vector#少于一个点的情况，方向向量为（0，0）
-        mean_x = 0
-        mean_y = 0
-        for i in range(max(0, length-10),length-1,1):#最后10个点的平均方向向量，如果少于十个点，取全部点的平均方向向量
-            det_x = self.sequence[i+1].x - self.sequence[i].x
-            det_y = self.sequence[i+1].x - self.sequence[i].y
-            mean_x += det_x*100000
-            mean_y += det_y*100000#scale 但是似乎不是必需的
-        mean_vector[0] = mean_x/min(length,10)
-        mean_vector[1] = mean_y/min(length,10)
-
-        return mean_vector#平均x的增量或减量，平均y的增量或减量
-
-    def near_field_of_track_head(self):
-        # TODO 一条track开头部分的一个周边范围，返回x,y,r(半径）
-
-        length = len(self.sequence)
-        if length <= 1:
-            return [0, 0, 0]
-        mean_point_head = self.get_middle_point(0, max(length, 20))  # todo 阈值是猜的
-        r = 1e-4
-
-        return [mean_point_head[0], mean_point_head[1], r]
-        '''
-'''
- #todo track 画一条速度曲线
-        id_to_check_1 = ['011_322145','011_322128', '013_321503','014_321601', '015_321067']  # 011_322145','011_322128', '013_321503',
-        id_to_check_2 = ['029_324834',
-                         '029_325577','029_324964','032_322801','036_324009','036_324120','036_323997','037_323592','037_323581','037_323582',
-                         '037_323583','037_323565','037_323568','037_323559','037_323560','037_323609','037_323601','037_323598','038_322551']
-        # ['016_323518','016_323547','016_323460','017_323800','020_322959','020_322973','020_322956','020_323051','020_323000',
-        # '020_323018','020_323052','025_322897','025_322924','029_325103','029_325323','029_325424','029_324974',
-        if self.id in id_to_check_2:
-            print(index_list)
-        #if True:
-            plt.figure('Line fig')
-            ax = plt.gca()
-            # 设置x轴、y轴名称
-            ax.set_xlabel('number')
-            ax.set_ylabel('speed')
-            ax.plot(point_num_list, speed_list, color='b', linewidth=1, alpha=0.6)
-            plt.draw()
-            plt.pause(3)
-            plt.close()
-
-        ###################attention!##################
-        new_speed_list = []
-        point_num_list = []
-        new_length = len(self.sequence)
-        for i in range(1, new_length):
-            det_x = self.sequence[i].x - self.sequence[i - 1].x
-            det_y = self.sequence[i].y - self.sequence[i - 1].y
-            speed = self.sequence[i].speed_between_point(self.sequence[i - 1])
-            new_speed_list.append(speed)
-            point_num_list.append(i)
-
-        if self.id in id_to_check_2:
-
-        #if True:
-            plt.figure('Line fig')
-            ax = plt.gca()
-            # 设置x轴、y轴名称
-            ax.set_xlabel('number')
-            ax.set_ylabel('speed')
-            ax.plot(point_num_list, new_speed_list, color='r', linewidth=1, alpha=0.6)
-            plt.draw()
-            plt.pause(3)
-
-            plt.close()
-
-         new_speed_list = []
-        point_num_list = []
-        new_length = len(self.sequence)
-        for i in range(1, new_length):
-            det_x = self.sequence[i].x - self.sequence[i - 1].x
-            det_y = self.sequence[i].y - self.sequence[i - 1].y
-            speed = self.sequence[i].speed_between_point(self.sequence[i - 1])
-            new_speed_list.append(speed)
-            point_num_list.append(i)
-
-
-        #if self.id in id_to_check_2:
-        if True:
-            plt.figure('Line fig')
-            ax = plt.gca()
-            # 设置x轴、y轴名称
-            ax.set_xlabel('number')
-            ax.set_ylabel('speed')
-            ax.plot(point_num_list, new_speed_list, color='r', linewidth=1, alpha=0.6)
-            print(self.id)
-            plt.draw()
-            plt.pause(0.001)
-
-            plt.close()
-
-
-'''

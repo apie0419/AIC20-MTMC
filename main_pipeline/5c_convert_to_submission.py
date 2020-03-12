@@ -1,9 +1,11 @@
-import os
+import os, sys
 
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+sys.path.append("..")
 
-input_path = os.path.join(BASE_PATH, "submission_adpt")
-out_path = os.path.join(BASE_PATH, "track3.txt")
+from config import cfg
+
+input_path = os.path.join(cfg.PATH.ROOT_PATH, "submission_adpt")
+out_path = os.path.join(cfg.PATH.ROOT_PATH, "track3.txt")
 
 f = open(out_path, 'w')
 lines = open(input_path).readlines()

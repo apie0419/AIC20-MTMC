@@ -2,23 +2,10 @@
 import numpy as np
 # import matplotlib.pyplot as plt
 
-from Track import Track
-from Point import Point
+from . import Track, Point
 
+SMOOTH_DIS = 1e-6
 
-# def check_distribution(data_list):
-#     distribution_list = [0] * 30
-#     for item in data_list:
-#         #if speed
-#         times = int(item / 10)
-#         if times > 29:
-#             continue
-#
-#         distribution_list[times] += 1
-#
-#     plt.bar(range(len(distribution_list)), distribution_list, color='rgb')
-#
-#     plt.show()
 class Map(object):
 
     def __init__(self,tracks_dict):
@@ -69,18 +56,6 @@ class Map(object):
         print('min_y', min(gps_y_list))
         print('mean_y', np.mean(gps_y_list))
         return max(gps_x_list)
-        '''
-        print('*'*30)
-        print('max_speed',max(speed_list))
-        print('min_speed',min(speed_list))
-        print('mean_speed',np.mean(speed_list))
-        print('median',np.median(speed_list))
-        counts = np.bincount(speed_list)
-        print('mode', np.argmax(counts))
-        #check_distribution(speed_list)'''
-
-
-
 
 
 

@@ -6,8 +6,8 @@ from PIL              import Image
 
 sys.path.append("..")
 
-from model.baseline import Baseline
-from config         import cfg
+from model.reid import Baseline
+from config     import cfg
 
 PRETRAIN_PATH = cfg.PATH.RESNET_PRETRAIN_MODEL_PATH
 WEIGHT        = cfg.PATH.REID_MODEL_PATH
@@ -119,7 +119,11 @@ def _process_data():
     gallery_imgs = list()
     
     for scene_dir in os.listdir(INPUT_DIR):
+        if not scene_dir.startswith("S0"):
+            continue
         for camera_dir in os.listdir(os.path.join(INPUT_DIR, scene_dir)):
+            for not camera_dir.startswith("c0"):
+                continue
             data_dir = os.path.join(INPUT_DIR, scene_dir, camera_dir, "cropped_images")
             img_list = os.listdir(data_dir)
             gallery_imgs.extend([os.path.join(data_dir, img) for img in img_list])

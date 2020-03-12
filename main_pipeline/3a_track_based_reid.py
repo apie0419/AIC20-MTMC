@@ -261,7 +261,8 @@ def main():
     scene_dirs = []
     scene_fds = os.listdir(input_dir)
     for scene_fd in scene_fds:
-        scene_dirs.append(os.path.join(input_dir, scene_fd))
+        if scene_fd.startswith("S0"):
+            scene_dirs.append(os.path.join(input_dir, scene_fd))
     for scene_dir in scene_dirs:
         # if scene_dir != './aic19-track1-mtmc/test/S02':
         #     continue

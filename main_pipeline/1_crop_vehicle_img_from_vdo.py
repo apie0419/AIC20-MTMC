@@ -163,7 +163,8 @@ def main():
     scene_dirs = []
     scene_fds = os.listdir(INPUT_PATH)
     for scene_fd in scene_fds:
-        scene_dirs.append(os.path.join(INPUT_PATH, scene_fd))
+        if scene_dir.startswith("S0"):
+            scene_dirs.append(os.path.join(INPUT_PATH, scene_fd))
 
     for scene_dir in scene_dirs:
         camera_dirs = []

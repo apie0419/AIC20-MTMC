@@ -11,7 +11,7 @@ INPUT:
   PADDING: 10
 
 DATASETS:
-  NAMES: ['aic20_t2', "veri"]
+  NAMES: ['aic20_t2']
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
@@ -42,6 +42,6 @@ TEST:
   IMS_PER_BATCH: 256 
   WEIGHT: "path"
 
-OUTPUT_DIR: "/home/apie/AIC20_track3/AIC20_MTMC/reid_baseline/export_dir/veri+t2"
+OUTPUT_DIR: "/home/apie/projects/AIC20_MTMC/reid_baseline/export_dir/t2"
 
 

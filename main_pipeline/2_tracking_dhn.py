@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-# 15
-"""
-"""
 import numpy as np
-import os, cv2, sys
+import os, cv2, sys, torch
 from scipy.optimize import linear_sum_assignment
+from torch.nn import Sigmoid
 
 sys.path.append("..")
 
-from config import cfg
+from config    import cfg
+from model.dhn import Munkrs
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 input_dir = cfg.PATH.INPUT_PATH
@@ -25,6 +23,23 @@ DISTENCE_TH = 100
 WIGHTS = 0.05
 MATCHED = True
 NO_MATCHED = False
+DEVICE = cfg.DEVICE.TYPE
+
+
+if DEVICE == 'cuda':
+    is_cuda = True
+else :
+    is_cuda = False
+
+deepMunkres = Munkrs(element_dim=1, hidden_dim=256, target_size=1,
+                         biDirenction=True, minibatch=128, is_cuda=True,
+                         is_train=False)
+deepMunkres.load_state_dict(torch.load(cfg.PATH.DHN_MODEL_PATH))
+if is_cuda:
+    deepMunkres = deepMunkres.cuda()
+
+deepMunkres.hidden_row = deepMunkres.init_hidden(1)
+deepMunkres.hidden_col = deepMunkres.init_hidden(1)
 
 def creat_no_used_number():
     with open(ard_uesd_num_path, 'r') as f:
@@ -142,63 +157,16 @@ class Frame(object):
 
 
 def Hungary(task_matrix):
-    b = task_matrix.copy()
-    # 行和列减0
-    for i in range(len(b)):
-        row_min = np.min(b[i])
-        for j in range(len(b[i])):
-            b[i][j] -= row_min
-    for i in range(len(b[0])):
-        col_min = np.min(b[:, i])
-        for j in range(len(b)):
-            b[j][i] -= col_min
-    line_count = 0
-    # 线数目小于矩阵长度时，进行循环
-    while (line_count < len(b)):
-        line_count = 0
-        row_zero_count = []
-        col_zero_count = []
-        for i in range(len(b)):
-            row_zero_count.append(np.sum(b[i] == 0))
-        for i in range(len(b[0])):
-            col_zero_count.append((np.sum(b[:, i] == 0)))
-        # 划线的顺序（分行或列）
-        line_order = []
-        row_or_col = []
-        for i in range(len(b[0]), 0, -1):
-            while (i in row_zero_count):
-                line_order.append(row_zero_count.index(i))
-                row_or_col.append(0)
-                row_zero_count[row_zero_count.index(i)] = 0
-            while (i in col_zero_count):
-                line_order.append(col_zero_count.index(i))
-                row_or_col.append(1)
-                col_zero_count[col_zero_count.index(i)] = 0
-        # 画线覆盖0，并得到行减最小值，列加最小值后的矩阵
-        delete_count_of_row = []
-        delete_count_of_rol = []
-        row_and_col = [i for i in range(len(b))]
-        for i in range(len(line_order)):
-            if row_or_col[i] == 0:
-                delete_count_of_row.append(line_order[i])
-            else:
-                delete_count_of_rol.append(line_order[i])
-            c = np.delete(b, delete_count_of_row, axis=0)
-            c = np.delete(c, delete_count_of_rol, axis=1)
-            line_count = len(delete_count_of_row) + len(delete_count_of_rol)
-            # 线数目等于矩阵长度时，跳出
-            if line_count == len(b):
-                break
-            # 判断是否画线覆盖所有0，若覆盖，进行加减操作
-            if 0 not in c:
-                row_sub = list(set(row_and_col) - set(delete_count_of_row))
-                min_value = np.min(c)
-                for i in row_sub:
-                    b[i] = b[i] - min_value
-                for i in delete_count_of_rol:
-                    b[:, i] = b[:, i] + min_value
-                break
-    row_ind, col_ind = linear_sum_assignment(b)
+    cost = task_matrix.copy()
+    mat_size = cost.shape[0]
+    with torch.no_grad():
+        
+        tensor_cost = torch.Tensor(cost).cuda().view(1, mat_size, mat_size)
+        sigmoid = Sigmoid()
+        tensor_cost = sigmoid(tensor_cost)
+        assign_mat = deepMunkres(tensor_cost).cpu().numpy()
+        assign_mat = assign_mat.reshape((mat_size, mat_size))
+    row_ind, col_ind = linear_sum_assignment(assign_mat, maximize=True)
     min_cost = task_matrix[row_ind, col_ind].sum()
     best_solution = list(task_matrix[row_ind, col_ind])
     return best_solution, col_ind
