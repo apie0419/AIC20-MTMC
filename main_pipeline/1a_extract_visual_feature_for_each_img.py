@@ -14,7 +14,7 @@ WEIGHT        = cfg.PATH.REID_MODEL_PATH
 INPUT_DIR     = cfg.PATH.INPUT_PATH
 DEVICE        = cfg.DEVICE.TYPE
 if DEVICE == "cuda":
-    torch.cuda.set_device(cfg.DEVICE.GPU)  
+    torch.cuda.set_device(cfg.DEVICE.GPU)
 
 PIXEL_MEAN = [0.485, 0.456, 0.406]
 PIXEL_STD  = [0.229, 0.224, 0.225]
@@ -25,42 +25,6 @@ PADDING       = 10
 LAST_STRIDE   = 1
 NUM_WORKERS   = 8
 IMS_PER_BATCH = 64
-
-class RandomErasing(object):
-    
-    def __init__(self, probability=0.5, sl=0.02, sh=0.4, r1=0.3, mean=(0.4914, 0.4822, 0.4465)):
-        self.probability = probability
-        self.mean = mean
-        self.sl = sl
-        self.sh = sh
-        self.r1 = r1
-
-    def __call__(self, img):
-
-        if random.uniform(0, 1) > self.probability:
-            return img
-
-        for attempt in range(100):
-            area = img.size()[1] * img.size()[2]
-
-            target_area = random.uniform(self.sl, self.sh) * area
-            aspect_ratio = random.uniform(self.r1, 1 / self.r1)
-
-            h = int(round(math.sqrt(target_area * aspect_ratio)))
-            w = int(round(math.sqrt(target_area / aspect_ratio)))
-
-            if w < img.size()[2] and h < img.size()[1]:
-                x1 = random.randint(0, img.size()[1] - h)
-                y1 = random.randint(0, img.size()[2] - w)
-                if img.size()[0] == 3:
-                    img[0, x1:x1 + h, y1:y1 + w] = self.mean[0]
-                    img[1, x1:x1 + h, y1:y1 + w] = self.mean[1]
-                    img[2, x1:x1 + h, y1:y1 + w] = self.mean[2]
-                else:
-                    img[0, x1:x1 + h, y1:y1 + w] = self.mean[0]
-                return img
-
-        return img
 
 class ImageDataset(Dataset):
 
@@ -122,7 +86,7 @@ def _process_data():
         if not scene_dir.startswith("S0"):
             continue
         for camera_dir in os.listdir(os.path.join(INPUT_DIR, scene_dir)):
-            for not camera_dir.startswith("c0"):
+            if not camera_dir.startswith("c0"):
                 continue
             data_dir = os.path.join(INPUT_DIR, scene_dir, camera_dir, "cropped_images")
             img_list = os.listdir(data_dir)
