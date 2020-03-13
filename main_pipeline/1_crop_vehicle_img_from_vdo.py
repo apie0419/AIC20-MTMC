@@ -175,11 +175,11 @@ def main():
         for camera_dir in camera_dirs:
             print(camera_dir)
 
-            video_path = camera_dir + '/vdo.avi'
-            det_path = camera_dir + '/det/det_mask_rcnn.txt'
-            out_path = camera_dir + '/det_gps_feature.txt'
-            roi_path = camera_dir + '/roi.jpg'
-            cali_path = camera_dir + '/calibration.txt'
+            video_path = os.path.join(camera_dir, 'vdo.avi')
+            det_path = os.path.join(camera_dir, 'det/det_mask_rcnn.txt')
+            out_path = os.path.join(camera_dir, 'det_gps_feature.txt')
+            roi_path = os.path.join(camera_dir, 'roi.jpg')
+            cali_path = os.path.join(camera_dir, 'calibration.txt')
             img_path = os.path.join(camera_dir, "cropped_images")
             if not os.path.exists(img_path):
                 os.makedirs(img_path, exist_ok=True)
