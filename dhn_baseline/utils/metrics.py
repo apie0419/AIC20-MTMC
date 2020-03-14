@@ -57,8 +57,8 @@ class Distmat(Metric):
         f_g.write(pickle.dumps(g_paths))
         f_g.close()
 
-class R1_mAP(Metric):
-    def __init__(self, num_query, max_rank=50):
+class MOTA(Metric):
+    def __init__(self):
         super(R1_mAP, self).__init__()
         self.num_query = num_query
         self.max_rank = max_rank
@@ -75,6 +75,13 @@ class R1_mAP(Metric):
         self.camids.extend(np.asarray(camid))
 
     def compute(self):
+        softmaxed_row = rowSoftMax(output_track_gt, scale=args.smax_scale).contiguous()
+        softmaxed_col = colSoftMax(output_track_gt, scale=args.smax_scale).contiguous()
+
+        
+        fn = missedObjectPerframe(softmaxed_col)
+        fp = falsePositivePerFrame(softmaxed_row)
+
         feats = torch.cat(self.feats, dim=0)
         # query
         qf = feats[:self.num_query]

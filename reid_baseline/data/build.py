@@ -1,11 +1,4 @@
-# encoding: utf-8
-"""
-@author:  liaoxingyu
-@contact: sherlockliao01@gmail.com
-"""
-
 from torch.utils.data import DataLoader
-
 from .collate_batch import train_collate_fn, val_collate_fn,test_collate_fn
 from .datasets import init_dataset, merge_dataset
 from .datasets.base import ImageDataset

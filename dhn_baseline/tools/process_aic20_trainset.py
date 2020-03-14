@@ -99,7 +99,7 @@ def process_data(data_dir):
                                 img = torch.Tensor(img).view(1, 3, 256, 256).cuda()
                                 feature = list(model(img)[0].cpu().numpy())
                                 feature = [str(f) for f in feature]
-                            f.write(str(tmp_i) + "," + str(det_box.id) + "," + ",".join(feature) + "," + str(GPS_coor[0]) + "," + str(GPS_coor[1]) + "\n")
+                            f.write(str(tmp_i) + "," + str(det_box.id)  + "," + str(GPS_coor[0]) + "," + str(GPS_coor[1]) + "," + ",".join(feature)+ "\n")
                             
 if __name__ == '__main__': 
     process_data(train_dir)

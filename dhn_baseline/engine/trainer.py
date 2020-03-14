@@ -7,64 +7,39 @@ from ignite.metrics import RunningAverage
 
 from utils.reid_metric import R1_mAP
 
-def create_supervised_trainer(model, optimizer, loss_fn,
-                              device=None):
-    """
-    Factory function for creating a trainer for supervised models
-
-    Args:
-        model (`torch.nn.Module`): the model to train
-        optimizer (`torch.optim.Optimizer`): the optimizer to use
-        loss_fn (torch.nn loss function): the loss function to use
-        device (str, optional): device type specification (default: None).
-            Applies to both model and batches.
-
-    Returns:
-        Engine: a trainer engine with supervised update function
-    """
+def create_supervised_trainer(model, optimizer, loss_fn, device=None):
+    
     if device:
         model.to(device)
 
     def _update(engine, batch):
         model.train()
         optimizer.zero_grad()
-        img, target, cams = batch
-        img = img.cuda()
+        data, target = batch
+        data = data.cuda()
         target = target.cuda()
-        score, feat = model(img)
-        loss = loss_fn(score, feat, target)
+        assignment = model(data)
+        loss = loss_fn(assignment, target)
         loss.backward()
         optimizer.step()
-        # compute acc
-        acc = (score.max(1)[1] == target).float().mean()
-        return loss.item(), acc.item()
+        
+        return loss.item()
 
     return Engine(_update)
 
 
-def create_supervised_evaluator(model, metrics,
-                                device=None):
-    """
-    Factory function for creating an evaluator for supervised models
-
-    Args:
-        model (`torch.nn.Module`): the model to train
-        metrics (dict of str - :class:`ignite.metrics.Metric`): a map of metric names to Metrics
-        device (str, optional): device type specification (default: None).
-            Applies to both model and batches.
-    Returns:
-        Engine: an evaluator engine with supervised inference function
-    """
+def create_supervised_evaluator(model, metrics, device=None):
+    
     if device:
         model.to(device)
 
     def _inference(engine, batch):
         model.eval()
         with torch.no_grad():
-            data, pids, cams = batch
+            data, target = batch
             data = data.cuda()
             feat = model(data)
-            return feat, pids, cams
+            return feat, target
 
     engine = Engine(_inference)
 
@@ -92,7 +67,7 @@ def do_train(
     epochs = cfg.SOLVER.MAX_EPOCHS
     if device == "cuda":
         os.environ['CUDA_VISIBLE_DEVICES'] = str(cfg.MODEL.CUDA)
-        torch.cuda.set_device(0)
+        torch.cuda.set_device(cfg.MODEL.CUDA)
         
 
     logger = logging.getLogger("reid_baseline.train")
@@ -109,7 +84,6 @@ def do_train(
 
     # average metric to attach on trainer
     RunningAverage(output_transform=lambda x: x[0]).attach(trainer, 'avg_loss')
-    RunningAverage(output_transform=lambda x: x[1]).attach(trainer, 'avg_acc')
 
     @trainer.on(Events.EPOCH_STARTED)
     def adjust_learning_rate(engine):
@@ -120,9 +94,9 @@ def do_train(
         iter = (engine.state.iteration - 1) % len(train_loader) + 1
 
         if iter % log_period == 0:
-            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, Acc: {:.3f}, Base Lr: {:.2e}"
+            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, Base Lr: {:.2e}"
                         .format(engine.state.epoch, iter, len(train_loader),
-                                engine.state.metrics['avg_loss'], engine.state.metrics['avg_acc'],
+                                engine.state.metrics['avg_loss'],
                                 scheduler.get_lr()[0]))
 
     # adding handlers using `trainer.on` decorator API

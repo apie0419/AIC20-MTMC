@@ -92,7 +92,7 @@ def do_train(
     epochs = cfg.SOLVER.MAX_EPOCHS
     if device == "cuda":
         os.environ['CUDA_VISIBLE_DEVICES'] = str(cfg.MODEL.CUDA)
-        torch.cuda.set_device(0)
+        torch.cuda.set_device(cfg.MODEL.CUDA)
         
 
     logger = logging.getLogger("reid_baseline.train")
