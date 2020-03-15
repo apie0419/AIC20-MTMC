@@ -1,15 +1,17 @@
+import torch
 from torch.utils.data import DataLoader
-from .dataset         import init_dataset
-
+from .datasets        import init_dataset
+from .collate_batch   import *
+from .datasets.base   import MatDataset
 
 def make_data_loader(cfg):
     num_workers = cfg.DATALOADER.NUM_WORKERS
-    print(cfg.DATASETS.NAMES)
+    print(cfg.DATASETS.NAME)
     dataset = init_dataset(cfg.DATASETS.NAME)
-
-    train_set = ImageDataset(dataset.train, train_transforms)
-    train_loader = DataLoader(dataset.trainset, batch_size=cfg.SOLVER.IMS_PER_BATCH, shuffle=True, num_workers=num_workers)
+    trainset = MatDataset(dataset.trainset)
+    valset   = MatDataset(dataset.valset)
+    train_loader = DataLoader(trainset, batch_size=cfg.SOLVER.IMS_PER_BATCH, shuffle=True, num_workers=num_workers, collate_fn=train_collate_fn)
     
-    val_loader = DataLoader(dataset.valset, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers)
+    val_loader = DataLoader(valset, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers, collate_fn=val_collate_fn)
     
     return train_loader, val_loader

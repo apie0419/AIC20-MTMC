@@ -1,11 +1,4 @@
-# encoding: utf-8
-"""
-@author:  sherlock
-@contact: sherlockliao01@gmail.com
-"""
-
 import torch
-
 
 def make_optimizer(cfg, model):
     params = []

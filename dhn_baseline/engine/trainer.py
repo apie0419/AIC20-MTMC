@@ -5,8 +5,6 @@ from ignite.engine import Engine, Events
 from ignite.handlers import ModelCheckpoint, Timer
 from ignite.metrics import RunningAverage
 
-from utils.reid_metric import R1_mAP
-
 def create_supervised_trainer(model, optimizer, loss_fn, device=None):
     
     if device:
@@ -56,13 +54,12 @@ def do_train(
         val_loader,
         optimizer,
         scheduler,
-        loss_fn,
-        num_query
+        loss_fn
 ):
     log_period = cfg.SOLVER.LOG_PERIOD
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
     eval_period = cfg.SOLVER.EVAL_PERIOD
-    output_dir = cfg.OUTPUT_DIR
+    output_dir = cfg.MODEL.OUTPUT_DIR
     device = cfg.MODEL.DEVICE
     epochs = cfg.SOLVER.MAX_EPOCHS
     if device == "cuda":
@@ -70,10 +67,10 @@ def do_train(
         torch.cuda.set_device(cfg.MODEL.CUDA)
         
 
-    logger = logging.getLogger("reid_baseline.train")
+    logger = logging.getLogger("dhn_baseline.train")
     logger.info("Start training")
     trainer = create_supervised_trainer(model, optimizer, loss_fn, device=device)
-    evaluator = create_supervised_evaluator(model, metrics={'r1_mAP': R1_mAP(num_query)}, device=device)
+    # evaluator = create_supervised_evaluator(model, metrics={'r1_mAP': R1_mAP(num_query)}, device=device)
     checkpointer = ModelCheckpoint(dirname=output_dir, filename_prefix=cfg.MODEL.NAME, n_saved=None, require_empty=False)
     timer = Timer(average=True)
 
@@ -108,13 +105,13 @@ def do_train(
         logger.info('-' * 10)
         timer.reset()
 
-    @trainer.on(Events.EPOCH_COMPLETED)
-    def log_validation_results(engine):
-        if engine.state.epoch % eval_period == 0:
-            evaluator.run(val_loader)
-            cmc, mAP = evaluator.state.metrics['r1_mAP']
-            logger.info("Validation Results - Epoch: {}".format(engine.state.epoch))
-            logger.info("mAP: {:.1%}".format(mAP))
-            for r in [1, 5, 10]:
-                logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
+    # @trainer.on(Events.EPOCH_COMPLETED)
+    # def log_validation_results(engine):
+    #     if engine.state.epoch % eval_period == 0:
+    #         # evaluator.run(val_loader)
+    #         # cmc, mAP = evaluator.state.metrics['r1_mAP']
+    #         logger.info("Validation Results - Epoch: {}".format(engine.state.epoch))
+    #         logger.info("mAP: {:.1%}".format(mAP))
+    #         for r in [1, 5, 10]:
+    #             logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
     trainer.run(train_loader, max_epochs=epochs)

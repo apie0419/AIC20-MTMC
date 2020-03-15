@@ -9,7 +9,15 @@ class aic20_t3(object):
         self.val_dir   = os.path.join(self.root, "validation")
 
         self.trainset = self.process_data(self.train_dir)
-        self._min, self._max = self.trainset[:, 0].min(), self.trainset[:, 0].max()
+        # print (self.trainset[:, 0].min())
+        self._min, self._max = 99999, 0
+        for data in self.trainset[:, 0].tolist():
+            _min = data.min()
+            _max = data.max()
+            if _min < self._min:
+                self._min = _min
+            if _max > self._max:
+                self._max = _max
         self.valset = self.process_data(self.val_dir)
         self.trainset = self.normalize(self.trainset, self._min, self._max)
         self.valset = self.normalize(self.valset, self._min, self._max)
@@ -30,9 +38,9 @@ class aic20_t3(object):
             pre_gps = pre_boxes[i]["gps"]
             pre_id = pre_boxes[i]["id"]
             for j in range(now_num):        
-                now_features = now_boxes[i]["features"]
-                now_gps = now_boxes[i]["gps"]
-                now_id  = now_boxes[i]["id"]
+                now_features = now_boxes[j]["features"]
+                now_gps = now_boxes[j]["gps"]
+                now_id  = now_boxes[j]["id"]
                 gps_dis_vec = ((pre_gps[0]-now_gps[0]), (pre_gps[1]-now_gps[1]))
                 gps_dis = (gps_dis_vec[0]*100000)**2 + (gps_dis_vec[1]*100000)**2
                 feature_dis_vec = now_features - pre_features
@@ -48,7 +56,6 @@ class aic20_t3(object):
         now_frame_idx = 0
         dataset, pre_boxes= list(), list()
         with open(gt_file_path, "r") as f:
-            lines = f.readlines()
             now_boxes = list()
             for line in f.readlines():
                 split_line = line.strip("\n").split(",")
@@ -56,10 +63,11 @@ class aic20_t3(object):
                 vehicle_id = int(split_line[1])
                 GPS_coor = np.array([split_line[2], split_line[3]], dtype=np.float32)
                 features = np.array(split_line[4:], dtype=np.float32)
+                
                 if frame_idx != now_frame_idx:
                     if len(now_boxes) > 0 and len(pre_boxes) > 0:
                         cost, gt = self.produce_distance_matrix(pre_boxes, now_boxes)
-                        dataset.append([data, target])
+                        dataset.append([cost, gt])
                     pre_boxes = now_boxes
                     now_boxes = list()
                     now_frame_idx = frame_idx
@@ -86,6 +94,7 @@ class aic20_t3(object):
                 if dirname.startswith("c0"):
                     camera_dirs.append(dirname)
             for camera_dir in camera_dirs:
+                
                 gt_file = os.path.join(scene_path, camera_dir, "dhn_gt_file.txt")
                 dataset = self.read_gt_file(gt_file)
                 all_data.extend(dataset)
