@@ -11,17 +11,25 @@ def create_supervised_trainer(model, optimizer, loss_fn, device=None):
         model.to(device)
 
     def _update(engine, batch):
+        print ("Test")
         model.train()
-        optimizer.zero_grad()
+        
         data, target = batch
+        print (len(data))
         data = data.cuda()
         target = target.cuda()
         assignment = model(data)
+        assignment = assignment.view(assignment.size(0) * assignment.size(1) * assignment.size(2), 1)
+        assignment = torch.cat((assignment, (1 - assignment)), 1)
+        assignment = assignment.cuda()
         loss = loss_fn(assignment, target)
+        print (loss.item())
+        loss_num = loss.item()
         loss.backward()
         optimizer.step()
-        
-        return loss.item()
+        optimizer.zero_grad()
+
+        return loss_num
 
     return Engine(_update)
 
@@ -62,11 +70,10 @@ def do_train(
     output_dir = cfg.MODEL.OUTPUT_DIR
     device = cfg.MODEL.DEVICE
     epochs = cfg.SOLVER.MAX_EPOCHS
+
     if device == "cuda":
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(cfg.MODEL.CUDA)
         torch.cuda.set_device(cfg.MODEL.CUDA)
         
-
     logger = logging.getLogger("dhn_baseline.train")
     logger.info("Start training")
     trainer = create_supervised_trainer(model, optimizer, loss_fn, device=device)
@@ -80,9 +87,9 @@ def do_train(
                  pause=Events.ITERATION_COMPLETED, step=Events.ITERATION_COMPLETED)
 
     # average metric to attach on trainer
-    RunningAverage(output_transform=lambda x: x[0]).attach(trainer, 'avg_loss')
+    # RunningAverage(output_transform=lambda x: x).attach(trainer, 'avg_loss')
 
-    @trainer.on(Events.EPOCH_STARTED)
+    @trainer.on(Events.EPOCH_COMPLETED)
     def adjust_learning_rate(engine):
         scheduler.step()
 

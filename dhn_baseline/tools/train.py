@@ -22,7 +22,7 @@ def train(cfg):
     scheduler = WarmupMultiStepLR(optimizer, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA, cfg.SOLVER.WARMUP_FACTOR,
                                   cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
 
-    loss_func = make_loss()
+    loss_func = make_loss(cfg)
 
     arguments = {}
 

@@ -214,8 +214,6 @@ def calu_track_feature_distance_new(tk0, tk1):
 
     return min_dis
 
-
-# @pysnooper.snoop()
 def analysis_to_track_dict(file_path):
     camera = file_path.split('/')[-2]
     track_dict = {}
@@ -291,10 +289,6 @@ def main():
             tk.average_feature = tk.get_average_feature()
             tk.feature_list = tk.get_feature_list()
 
-
-
-
-
         # 构建特征距离矩阵
         print("calu distence mat")
         distence_mat = np.zeros((l, l))
@@ -327,13 +321,8 @@ def main():
                 outer_dis = calu_feature_distance(tk0.sequence[0].feature, tk1.sequence[0].feature)
                 # print "outer dis: ", outer_dis
                 outer_total_dis.append(outer_dis)
-        # draw_hist(outer_total_dis, 'outer dis', 'dis', 'number', 0.0, 400, 0.0, 400000)
-
-        # if True:
-        #     continue
-
-
-        # 构建id的顺序字典，并计算平均特征
+        
+        
         print("calu average feature.")
         id_order_dict = {}
         l = len(track_list)

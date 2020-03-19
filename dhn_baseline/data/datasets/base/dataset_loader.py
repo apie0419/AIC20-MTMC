@@ -14,8 +14,7 @@ class MatDataset(Dataset):
     def __getitem__(self, index):
         dis_matrix, gt_matrix = self.dataset[index]
         
-
-        dis_matrix = torch.from_numpy(dis_matrix)
-        gt_matrix = torch.from_numpy(gt_matrix)
+        dis_matrix = torch.FloatTensor(dis_matrix)
+        gt_matrix = torch.LongTensor(gt_matrix)
 
         return dis_matrix, gt_matrix

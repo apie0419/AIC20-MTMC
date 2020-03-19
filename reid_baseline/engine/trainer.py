@@ -91,7 +91,6 @@ def do_train(
     device = cfg.MODEL.DEVICE
     epochs = cfg.SOLVER.MAX_EPOCHS
     if device == "cuda":
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(cfg.MODEL.CUDA)
         torch.cuda.set_device(cfg.MODEL.CUDA)
         
 

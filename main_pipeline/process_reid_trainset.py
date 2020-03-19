@@ -1,8 +1,10 @@
 import numpy as np
-import cv2, os
+import cv2, os, sys
 
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-TRAINSET_PATH = os.path.join(BASE_PATH, "../dataset/AIC20_T3/train")
+sys.path.append("..") 
+
+from config import cfg
+
 
 IMAGE_COUNT = 1
 TH_SCORE = 0.5
@@ -64,7 +66,7 @@ def preprocess_boxes(src_boxes, src_ids):
             ids.append(src_id)
     return boxes, ids
 
-def main():
+def main(TRAINSET_PATH):
     
     for scene_dir in os.listdir(TRAINSET_PATH):
         if not scene_dir.startswith("S0"):
@@ -115,4 +117,6 @@ def main():
     print ("Finish")
 
 if __name__ == "__main__":
-    main()
+    for path in ["validation"]:
+
+        main(os.path.join(cfg.PATH.ROOT_PATH, path))

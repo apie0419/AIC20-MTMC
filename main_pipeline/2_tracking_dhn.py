@@ -19,7 +19,7 @@ IOU_TH = 0.7
 W_PAD = 0
 H_PAD = 0
 
-DISTENCE_TH = 100
+DISTENCE_TH = 0.5
 WIGHTS = 0.05
 MATCHED = True
 NO_MATCHED = False
@@ -229,66 +229,44 @@ def process_a_video(camera_dir):
         # 如果一个track，它和当前帧所有的box都不相似，那么它应该被移除,不参与后面的匹配
         delete_tks = []
         for tk in flowing_track:
-            tk_ft = tk.get_last_feature()
-            tk_gps = tk.get_last_gps()
+            # tk_ft = tk.get_last_feature()
+            # tk_gps = tk.get_last_gps()
+            tk_box = tk.get_last().box
             no_matched_flag = True
             for box in cur_frame.boxes:
-                # 计算特征差
-                box_ft = box.feature
-                feature_dis_vec = box_ft - tk_ft
-                feature_dis = np.dot(feature_dis_vec.T, feature_dis_vec)
+                now_box = box.box
+                iou = compute_iou(now_box, tk_box)
 
-                # 计算gps差
-                box_gps = box.gps_coor
-                gps_dis_vec = ((tk_gps[0]-box_gps[0]), (tk_gps[1]-box_gps[1]))
-                gps_dis = (gps_dis_vec[0]*100000)**2 + (gps_dis_vec[1]*100000)**2
-                # print feature_dis, gps_dis_vec, gps_dis
-                total_dis = gps_dis*WIGHTS + feature_dis
-                # if feature_dis < 50:
-                #     print 'near: ', gps_dis*WIGHTS, feature_dis, total_dis
-                # if feature_dis > 150:
-                #     print 'far: ', gps_dis*WIGHTS, feature_dis, total_dis
-
-                if total_dis < DISTENCE_TH:
+                if iou > IOU_TH:
                     no_matched_flag = False
             if no_matched_flag:
                 delete_tks.append(tk)
 
-        # print 's:', len(flowing_track)
         for tk in delete_tks:
             result_dict[tk.id] = tk
             flowing_track.remove(tk)
-        # print 'e:', len(flowing_track)
 
-        # 匈牙利算法：每个tk都是一个待匹配的任务，找到最适合的解法
-        # 为匈牙利算法生成cost矩阵
         tk_num = len(flowing_track)
         bx_num = len(cur_frame.boxes)
         mat_size = max(tk_num, bx_num)
         cost_matrix = np.zeros((mat_size, mat_size))
         for i in range(bx_num):
             box = cur_frame.boxes[i]
-            box_ft = box.feature
-            box_gps = box.gps_coor
+            now_box = box.box
+
             for j in range(tk_num):
                 tk = flowing_track[j]
-                tk_ft = tk.get_last_feature()
-                tk_gps = tk.get_last_gps()
+                
+                tk_box = tk.get_last().box
 
-                # 计算特征差
-                feature_dis_vec = box_ft - tk_ft
-                feature_dis = np.dot(feature_dis_vec.T, feature_dis_vec)
-                # 计算gps差
-                gps_dis_vec = ((tk_gps[0] - box_gps[0]), (tk_gps[1] - box_gps[1]))
-                gps_dis = (gps_dis_vec[0] * 100000) ** 2 + (gps_dis_vec[1] * 100000) ** 2
-                total_dis = gps_dis * WIGHTS + feature_dis
-                cost_matrix[i][j] = total_dis
+                iou = compute_iou(now_box, tk_box)
+                cost_matrix[i][j] = iou
         if bx_num == tk_num:
             # case1:boxes数量等于track数量（人数=任务数）
             costs, col_ind = Hungary(cost_matrix)
             # print costs
             for i in range(bx_num):
-                if costs[i] < DISTENCE_TH:
+                if costs[i] > IOU_TH:
                     tk_index = col_ind[i]
                     box = cur_frame.boxes[i]
                     cur_frame.boxes[i].match_state = MATCHED
@@ -300,7 +278,7 @@ def process_a_video(camera_dir):
             # print costs
             for i in range(bx_num):
                 if col_ind[i] < tk_num:
-                    if costs[i] < DISTENCE_TH:
+                    if costs[i] > IOU_TH:
                         tk_index = col_ind[i]
                         box = cur_frame.boxes[i]
                         cur_frame.boxes[i].match_state = MATCHED
@@ -312,7 +290,7 @@ def process_a_video(camera_dir):
             # print costs
             for i in range(tk_num):
                 if col_ind[i] < bx_num:
-                    if costs[i] < DISTENCE_TH:
+                    if costs[i] > IOU_TH:
                         box_index = col_ind[i]
                         cur_frame.boxes[box_index].match_state = MATCHED
                         flowing_track[i].append(cur_frame.boxes[box_index])

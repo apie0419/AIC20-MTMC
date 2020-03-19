@@ -128,31 +128,6 @@ class Track(object):
         else:
             return 'fbc'
 
-        # # 计算前半段位移方向和位移距离
-        # move_vec0 = (0, 0)
-        # for i in range(1, l):
-        #     move_dis0 = calu_moving_distance(self.sequence[0], self.sequence[i])
-        #     if move_dis0 > MOVE_TH:
-        #         move_vec0 = calu_moving_vec(self.sequence[0], self.sequence[i])
-        #         break
-        #
-        # # 计算后半段位移方向和位移距离
-        # move_vec1 = (0, 0)
-        # for i in range(l-2, 0, -1):
-        #     move_dis1 = calu_moving_distance(self.sequence[i], self.sequence[l-1])
-        #     if move_dis1 > MOVE_TH:
-        #         move_vec1 = calu_moving_vec(self.sequence[i], self.sequence[l-1])
-        #         break
-        #
-        # # 计算方向
-        # ori0 = calu_vec_orientation(move_vec0)
-        # ori1 = calu_vec_orientation(move_vec1)
-        #
-        # if ori0 == ori1:
-        #     return ori + ori0
-        # else:
-        #     return ori + ori0 + ori1
-
 
     def remove_edge_box(self, roi):
         boxes = self.sequence

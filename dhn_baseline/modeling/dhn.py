@@ -3,9 +3,14 @@ import torch.nn as nn
 
 # Deep Hungarian Net #
 
+
+
 class Munkrs(nn.Module):
-    def __init__(self, element_dim, hidden_dim, target_size, biDirenction, minibatch, is_cuda, is_train=True):
+    def __init__(self, element_dim, hidden_dim, target_size, biDirenction, minibatch, is_cuda, gpu_id, is_train=True):
         super(Munkrs, self).__init__()
+
+        if is_cuda:
+            torch.cuda.set_device(gpu_id)
         self.hidden_dim = hidden_dim
         self.bidirect = biDirenction
         self.minibatch = minibatch

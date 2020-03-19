@@ -1,7 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
 from .datasets        import init_dataset
-from .collate_batch   import *
 from .datasets.base   import MatDataset
 
 def make_data_loader(cfg):
@@ -10,8 +9,8 @@ def make_data_loader(cfg):
     dataset = init_dataset(cfg.DATASETS.NAME)
     trainset = MatDataset(dataset.trainset)
     valset   = MatDataset(dataset.valset)
-    train_loader = DataLoader(trainset, batch_size=cfg.SOLVER.IMS_PER_BATCH, shuffle=True, num_workers=num_workers, collate_fn=train_collate_fn)
+    train_loader = DataLoader(trainset, batch_size=cfg.SOLVER.IMS_PER_BATCH, shuffle=True, num_workers=num_workers)
     
-    val_loader = DataLoader(valset, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers, collate_fn=val_collate_fn)
+    val_loader = DataLoader(valset, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers)
     
     return train_loader, val_loader

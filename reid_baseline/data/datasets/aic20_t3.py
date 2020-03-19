@@ -10,10 +10,8 @@ class aic20_t3(BaseImageDataset):
         super(aic20_t3, self).__init__()
         self.root      = "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
         self.train_dir = os.path.join(self.root, 'train')
-        self.test_dir  = os.path.join(self.root, "test")
 
         self.train, self.query, self.gallery = self._process_train(500)
-        self.query_test, self.gallery_test = self._process_test()
         self.num_vids, self.num_imgs, self.num_cams = self.get_imagedata_info(self.train)
         
     def _process_train(self, num_query):
@@ -51,20 +49,3 @@ class aic20_t3(BaseImageDataset):
         q,g = val_set[:num_query], val_set[num_query:]
         return trn_set, q, g
 
-    def _process_test(self):
-        gallery_imgs = list()
-        
-        for scene_dir in os.listdir(self.test_dir):
-            for camera_dir in os.listdir(os.path.join(self.test_dir, scene_dir)):
-                data_dir = os.path.join(self.test_dir, scene_dir, camera_dir, "cropped_images")
-                img_list = os.listdir(data_dir)
-                gallery_imgs.extend([os.path.join(data_dir, img) for img in img_list])
-    
-        query_imgs = [gallery_imgs[0]]
-        query = [[img, -1, -1] for img in query_imgs]
-        gallery = [[img, -1, -1] for img in gallery_imgs]
-        return query, gallery
-
-if __name__ == '__main__':
-    df = process_trn() 
-    print(df.head())
