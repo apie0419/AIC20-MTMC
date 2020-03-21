@@ -1,6 +1,10 @@
-import logging
-
-import torch, os
+import torch, os, logging
+from config import cfg
+from data import make_data_loader
+from layers import make_loss
+from solver import make_optimizer, WarmupMultiStepLR
+from modeling import build_model
+from utils.logger import setup_logger
 from ignite.engine import Engine, Events
 from ignite.handlers import ModelCheckpoint, Timer
 from ignite.metrics import RunningAverage
@@ -13,52 +17,25 @@ def create_supervised_trainer(model, optimizer, loss_fn, device=None):
     def _update(engine, batch):
         model.train()
         
-        data, target, size = batch
+        data, target = batch
         
         data = data.cuda()
         target = target.cuda()
-        assignment = model(data)
-        assignment = assignment.view(assignment.size(0) * assignment.size(1) * assignment.size(2), 1)
-        assignment = torch.cat((assignment, (1 - assignment)), 1)
-        assignment = assignment.cuda()
-        loss = loss_fn(assignment, target)
+        output = model(data)
+        loss = loss_fn(output, target)
         
-        loss_num = loss.item()
-        loss.backward(retain_graph=True)
+        loss.backward()
         optimizer.step()
         optimizer.zero_grad()
 
-        return loss_num
+        return loss.item()
 
     return Engine(_update)
-
-
-def create_supervised_evaluator(model, metrics, device=None):
-    
-    if device:
-        model.to(device)
-
-    def _inference(engine, batch):
-        model.eval()
-        with torch.no_grad():
-            data, target, size = batch
-            data = data.cuda()
-            feat = model(data)
-            return feat, target
-
-    engine = Engine(_inference)
-
-    for name, metric in metrics.items():
-        metric.attach(engine, name)
-
-    return engine
-
 
 def do_train(
         cfg,
         model,
         train_loader,
-        val_loader,
         optimizer,
         scheduler,
         loss_fn
@@ -73,8 +50,8 @@ def do_train(
     if device == "cuda":
         torch.cuda.set_device(cfg.MODEL.CUDA)
         
-    logger = logging.getLogger("dhn_baseline.train")
-    logger.info("Start training")
+    logger = logging.getLogger("tracker.train")
+    logger.info("Start Training")
     trainer = create_supervised_trainer(model, optimizer, loss_fn, device=device)
     # evaluator = create_supervised_evaluator(model, metrics={'r1_mAP': R1_mAP(num_query)}, device=device)
     checkpointer = ModelCheckpoint(dirname=output_dir, filename_prefix=cfg.MODEL.NAME, n_saved=None, require_empty=False)
@@ -87,6 +64,7 @@ def do_train(
 
     # average metric to attach on trainer
     RunningAverage(output_transform=lambda x: x).attach(trainer, 'avg_loss')
+    RunningAverage(output_transform=lambda x: x).attach(trainer, 'avg_acc')
 
     @trainer.on(Events.EPOCH_COMPLETED)
     def adjust_learning_rate(engine):
@@ -97,12 +75,12 @@ def do_train(
         iter = (engine.state.iteration - 1) % len(train_loader) + 1
 
         if iter % log_period == 0:
-            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, Base Lr: {:.2e}"
+            logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, Accuracy: {:.3f},  Base Lr: {:.2e}"
                         .format(engine.state.epoch, iter, len(train_loader),
                                 engine.state.metrics['avg_loss'],
+                                engine.state.metrics['avg_acc']
                                 scheduler.get_lr()[0]))
 
-    # adding handlers using `trainer.on` decorator API
     @trainer.on(Events.EPOCH_COMPLETED)
     def print_times(engine):
         logger.info('Epoch {} done. Time per batch: {:.3f}[s] Speed: {:.1f}[samples/s]'
@@ -120,4 +98,35 @@ def do_train(
     #         logger.info("mAP: {:.1%}".format(mAP))
     #         for r in [1, 5, 10]:
     #             logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
+
     trainer.run(train_loader, max_epochs=epochs)
+
+def main():
+    output_dir = cfg.MODEL.OUTPUT_DIR
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    logger = setup_logger("tracker", output_dir, 0)
+    logger.info("Running with config:\n{}".format(cfg))
+    torch.backends.cudnn.benchmark = True
+
+    train_loader = make_data_loader(cfg)
+
+    model = build_model(cfg)
+    optimizer = make_optimizer(cfg, model)
+    scheduler = WarmupMultiStepLR(optimizer, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA, cfg.SOLVER.WARMUP_FACTOR,
+                                  cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
+
+    loss_func = make_loss(cfg)
+
+    do_train(
+        cfg,
+        model,
+        train_loader,
+        optimizer,
+        scheduler,
+        loss_func
+    )
+
+if __name__ == '__main__':
+    main()

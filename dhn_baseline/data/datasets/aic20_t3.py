@@ -9,7 +9,7 @@ class aic20_t3(object):
         self.val_dir   = os.path.join(self.root, "validation")
 
         self.trainset = self.process_data(self.train_dir)
-        # print (self.trainset[:, 0].min())
+        
         self._min, self._max = 99999, 0
         for data in self.trainset[:, 0].tolist():
             
@@ -38,6 +38,7 @@ class aic20_t3(object):
         mat_size = max(pre_num, now_num)
         cost_matrix = np.full((mat_size, mat_size), np.inf, dtype=np.float32)
         gt_matrix = np.ones((mat_size ** 2, ), dtype=np.float32)
+        size = np.array([mat_size], dtype=np.int64)
         for i in range(pre_num):
             pre_features = pre_boxes[i]["features"]
             pre_gps = pre_boxes[i]["gps"]
@@ -55,7 +56,7 @@ class aic20_t3(object):
                 if now_id == pre_id:
                     gt_matrix[i * mat_size + j] = 0 # MATCH
 
-        return cost_matrix, gt_matrix
+        return cost_matrix, gt_matrix, size
 
     def read_gt_file(self, gt_file_path):
         now_frame_idx = 0
@@ -72,8 +73,8 @@ class aic20_t3(object):
                 
                 if frame_idx != now_frame_idx:
                     if len(now_boxes) > 0 and len(pre_boxes) > 0:
-                        cost, gt = self.produce_distance_matrix(pre_boxes, now_boxes)
-                        dataset.append([cost, gt])
+                        cost, gt, size = self.produce_distance_matrix(pre_boxes, now_boxes)
+                        dataset.append([cost, gt, size])
                     pre_boxes = now_boxes
                     now_boxes = list()
                     now_frame_idx = frame_idx
@@ -93,13 +94,13 @@ class aic20_t3(object):
             if dirname.startswith("S0"):
                 scene_dirs.append(dirname)
 
-        for scene_dir in scene_dirs[:1]:
+        for scene_dir in scene_dirs:
             camera_dirs = list()
             scene_path  = os.path.join(data_dir, scene_dir)
             for dirname in os.listdir(scene_path):
                 if dirname.startswith("c0"):
                     camera_dirs.append(dirname)
-            for camera_dir in camera_dirs[:1]:
+            for camera_dir in camera_dirs:
                 
                 gt_file = os.path.join(scene_path, camera_dir, "dhn_gt_file.txt")
                 dataset = self.read_gt_file(gt_file)

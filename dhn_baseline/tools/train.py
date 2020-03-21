@@ -40,7 +40,6 @@ def train(cfg):
 def main():
     num_gpus = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
 
-    cfg.freeze()
 
     output_dir = cfg.MODEL.OUTPUT_DIR
     if output_dir and not os.path.exists(output_dir):

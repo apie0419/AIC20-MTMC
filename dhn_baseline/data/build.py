@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from .datasets        import init_dataset
 from .datasets.base   import MatDataset
+from .collate_batch   import *
 
 def make_data_loader(cfg):
     num_workers = cfg.DATALOADER.NUM_WORKERS

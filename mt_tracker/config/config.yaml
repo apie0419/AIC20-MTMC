@@ -1,21 +1,15 @@
 PATH:
   ROOT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
-  RESNET_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth"
-  REID_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_t2t3+veri.pth"
-  DHN_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/DHN.pth"
 
 MODEL:
-  NAME: "dhn"
+  NAME: "mtmc"
   DEVICE: "cuda"
   CUDA: 1
-  BI_DIRECTION: True
-  ELEMENT_DIM: 1
   HIDDEN_DIM: 256
-  TARGET_SIZE: 1
-  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/dhn_baseline/export_dir/aic20_t3"
+  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc"
 
 DATASETS:
-  NAME: 'aic20_t3'
+  NAME: 'mtmc'
 
 DATALOADER:
   NUM_INSTANCE: 4
@@ -40,6 +34,3 @@ SOLVER:
   CHECKPOINT_PERIOD: 5
   LOG_PERIOD: 100
   EVAL_PERIOD: 20
-
-TEST:
-  IMS_PER_BATCH: 1

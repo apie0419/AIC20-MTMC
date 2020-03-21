@@ -15,7 +15,7 @@ def build_model(cfg):
     # model_weight.update(weight)
     # model.load_state_dict(model_weight)
    
-    model.hidden_row = model.init_hidden(1)
-    model.hidden_col = model.init_hidden(1)
+    model.hidden_row = model.init_hidden(cfg.SOLVER.IMS_PER_BATCH)
+    model.hidden_col = model.init_hidden(cfg.SOLVER.IMS_PER_BATCH)
 
     return model

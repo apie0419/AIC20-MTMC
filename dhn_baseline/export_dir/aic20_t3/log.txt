@@ -1,5 +1,5 @@
-2020-03-20 05:25:10,380 reid_baseline INFO: Using 1 GPUS
-2020-03-20 05:25:10,381 reid_baseline INFO: Running with config:
+2020-03-21 04:08:35,709 reid_baseline INFO: Using 1 GPUS
+2020-03-21 04:08:35,709 reid_baseline INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
   NUM_WORKERS: 8
@@ -17,7 +17,7 @@ MODEL:
 PATH:
   DHN_PRETRAIN_MODEL_PATH: /home/apie/projects/AIC20-MTMC/weights/DHN.pth
   INPUT_PATH: <path_to_input_path>
-  REID_MODEL_PATH: /home/apie/projects/AIC20-MTMC/weights/resnet50_model_t2.pth
+  REID_MODEL_PATH: /home/apie/projects/AIC20-MTMC/weights/resnet50_model_t2t3+veri.pth
   RESNET_PRETRAIN_MODEL_PATH: /home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth
   ROOT_PATH: /home/apie/projects/AIC20-MTMC/dataset/AIC20_T3
 SOLVER:
@@ -26,7 +26,7 @@ SOLVER:
   CHECKPOINT_PERIOD: 5
   EVAL_PERIOD: 20
   GAMMA: 0.1
-  IMS_PER_BATCH: 32
+  IMS_PER_BATCH: 1
   LOG_PERIOD: 100
   MARGIN: 0.3
   MAX_EPOCHS: 20
