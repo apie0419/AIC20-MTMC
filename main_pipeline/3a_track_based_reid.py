@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 sys.path.append("..")
 
 from config import cfg
+from model import build_mtmc_model
 
 MATCHED = True
 NO_MATCHED = False
@@ -186,34 +187,6 @@ def calu_track_feature_distance(tk0, tk1):
     return min_dis
 
 
-# 计算两个track之间的特征距离，选最小的特征差距作为距离，加入图像大小
-def calu_track_feature_distance_new(tk0, tk1):
-
-    bx_list0 = tk0.sequence
-    bx_list1 = tk1.sequence
-
-    min_dis = 99999999
-
-    for bx0 in bx_list0:
-        for bx1 in bx_list1:
-            ft0 = bx0.feature
-            ft1 = bx1.feature
-            dis = calu_feature_distance(ft0, ft1)
-
-            scale = 1
-            if bx0.get_area() < 10000:
-                scale *= 1.5
-            if bx1.get_area() < 10000:
-                scale *= 1.5
-
-            # print scale, dis
-            dis = dis*scale
-
-            if dis < min_dis:
-                min_dis = dis
-
-    return min_dis
-
 def analysis_to_track_dict(file_path):
     camera = file_path.split('/')[-2]
     track_dict = {}
@@ -309,19 +282,7 @@ def main():
                 # print "inner dis: ", inner_dis
                 inner_total_dis.append(inner_dis)
         # draw_hist(inner_total_dis, 'inner dis', 'dis', 'number', 0.0, 400, 0.0, 60000)  # 直方图展示
-
-        # 展示不同track间的距离
-        outer_total_dis = []
-        for i in range(len(track_list)):
-            tk0 = track_list[i]
-            for j in range(len(track_list)):
-                if i == j:
-                    continue
-                tk1 = track_list[j]
-                outer_dis = calu_feature_distance(tk0.sequence[0].feature, tk1.sequence[0].feature)
-                # print "outer dis: ", outer_dis
-                outer_total_dis.append(outer_dis)
-        
+ 
         
         print("calu average feature.")
         id_order_dict = {}

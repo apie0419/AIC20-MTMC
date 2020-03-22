@@ -1,29 +1,18 @@
 import torch, sys, os, re
-import torchvision.transforms as T
 from torch.utils.data import DataLoader, Dataset
-from ignite.engine    import Engine
 from PIL              import Image
 
 sys.path.append("..")
 
-from model.reid import Baseline
+from model import build_transforms, build_model
 from config     import cfg
 
-PRETRAIN_PATH = cfg.PATH.RESNET_PRETRAIN_MODEL_PATH
-WEIGHT        = cfg.PATH.REID_MODEL_PATH
 INPUT_DIR     = cfg.PATH.INPUT_PATH
 DEVICE        = cfg.DEVICE.TYPE
 
 if DEVICE == "cuda":
     torch.cuda.set_device(cfg.DEVICE.GPU)
 
-PIXEL_MEAN = [0.485, 0.456, 0.406]
-PIXEL_STD  = [0.229, 0.224, 0.225]
-SIZE_TRAIN = [256,256]
-SIZE_TEST  = [256,256]
-PROB          = 0.5
-PADDING       = 10
-LAST_STRIDE   = 1
 NUM_WORKERS   = 8
 IMS_PER_BATCH = 64
 
@@ -50,38 +39,21 @@ class ImageDataset(Dataset):
         return img
 
     def __getitem__(self, index):
-        img_path, pid, camids = self.dataset[index]
+        img_path = self.dataset[index]
         img = self.read_image(img_path)
 
         if self.transform is not None:
             img = self.transform(img)
 
-        return img, pid, camids, img_path
+        return img, img_path
 
 def collate_fn(batch):
-    imgs, vids, camids, path = zip(*batch)
-    return torch.stack(imgs, dim=0), vids, camids, path
+    imgs, path = zip(*batch)
+    return torch.stack(imgs, dim=0), path
 
-def build_transforms():
-    normalize_transform = T.Normalize(mean=PIXEL_MEAN, std=PIXEL_STD)
-    
-    transform = T.Compose([
-        T.Resize(SIZE_TEST),
-        T.ToTensor(),
-        normalize_transform
-    ])
-
-    return transform
-
-def build_model():
-    weight = torch.load(WEIGHT)
-    NUM_CLASSES = weight["classifier.weight"].shape[0]
-    model = Baseline(NUM_CLASSES, LAST_STRIDE, PRETRAIN_PATH)
-    model.load_state_dict(weight)
-    return model
 
 def _process_data():
-    gallery_imgs = list()
+    imgs = list()
     
     for scene_dir in os.listdir(INPUT_DIR):
         if not scene_dir.startswith("S0"):
@@ -89,24 +61,22 @@ def _process_data():
         for camera_dir in os.listdir(os.path.join(INPUT_DIR, scene_dir)):
             if not camera_dir.startswith("c0"):
                 continue
+            feature_file = os.path.join(INPUT_DIR, scene_dir, camera_dir, "deep_features.txt")
+            if os.path.exists(feature_file):
+                os.remove(feature_file)
+
             data_dir = os.path.join(INPUT_DIR, scene_dir, camera_dir, "cropped_images")
             img_list = os.listdir(data_dir)
-            gallery_imgs.extend([os.path.join(data_dir, img) for img in img_list])
+            imgs.extend([os.path.join(data_dir, img) for img in img_list])
 
-    query_imgs = [gallery_imgs[0]]
-    query = [[img, -1, -1] for img in query_imgs]
-    gallery = [[img, -1, -1] for img in gallery_imgs[1:]]
-    return query, gallery
+    return imgs
 
 def _inference(model, data_loader):
-
-    def _inference(engine, batch):
-        model.eval()
-        with torch.no_grad():
-            data, _, _, paths = batch
+    model.eval()
+    with torch.no_grad():
+        for data, paths in data_loader:
             data = data.cuda()
             feat = model(data)
-            
             for i,p in enumerate(paths):
                 scene_dir = re.search(r"S([0-9]){2}", p).group(0)
                 camera_dir = re.search(r"c([0-9]){3}", p).group(0)
@@ -116,19 +86,14 @@ def _inference(model, data_loader):
                     print(line)
                     feature = list(feat[i].cpu().numpy())
                     for fea in feature:
-                        line = line + str(fea)+' '
+                        line = line + str(fea) + ' '
                     f.write(line.strip()+'\n')
-
-            return feat, paths
-
-    evaluator = Engine(_inference)
-    evaluator.run(data_loader)
-
+    
 if __name__ == "__main__":
-    query, gallery = _process_data()
+    imgs = _process_data()
     transforms = build_transforms()
-    model = build_model()
+    model = build_model(cfg)
     model = model.to(DEVICE)
-    dataset = ImageDataset(query + gallery, transforms)
+    dataset = ImageDataset(imgs, transforms)
     dataloader = DataLoader(dataset, batch_size=IMS_PER_BATCH, shuffle=False, num_workers=NUM_WORKERS, collate_fn=collate_fn)
     _inference(model, dataloader)

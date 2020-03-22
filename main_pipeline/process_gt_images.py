@@ -13,21 +13,31 @@ IOU_TH = 0.7
 W_PAD = 0
 H_PAD = 0
 
-
-def crop(frame, boxes, ids, img_path):
+def crop(fnum, frame, boxes, ids, img_path, trans_mat):
     global IMAGE_COUNT
     idx = 0
+    data = list()
     for box in boxes:
+        coor = (box[0] + box[2]/2, box[1] + box[3]/2)
+        image_coor = [coor[0], coor[1], 1]
+        GPS_coor = np.dot(trans_mat, image_coor)
+        GPS_coor = GPS_coor / GPS_coor[2]
+        GPS_coor = GPS_coor.tolist()
         cropped_img = frame[box[0]:box[2], box[1]:box[3]]
         output_path = os.path.join(img_path, str(ids[idx]))
+        img_name = str(IMAGE_COUNT).zfill(10) + ".jpg"
+
         if not os.path.exists(output_path):
             os.makedirs(output_path, exist_ok=True)
         
         cv2.imwrite(os.path.join(output_path, str(IMAGE_COUNT).zfill(10) + ".jpg"), cropped_img)
-        print ("Cropped Image: " + os.path.join(output_path, str(IMAGE_COUNT).zfill(10) + ".jpg"))
+        print ("Cropped Image: " + os.path.join(output_path, img_name))
+        data.append(img_name + "," + str(fnum) + "," + str(ids[idx]) + "," + str(GPS_coor[0]) + "," + str(GPS_coor[1]))
         idx += 1
-    
+
     IMAGE_COUNT += 1
+
+    return data
 
 def compute_iou(box1, box2):
 
@@ -66,6 +76,18 @@ def preprocess_boxes(src_boxes, src_ids):
             ids.append(src_id)
     return boxes, ids
 
+def analysis_transfrom_mat(cali_path):
+    first_line = open(cali_path).readlines()[0].strip('\r\n')
+    cols = first_line.lstrip('Homography matrix: ').split(';')
+    transfrom_mat = np.ones((3, 3))
+    for i in range(3):
+        values_string = cols[i].split()
+        for j in range(3):
+            value = float(values_string[j])
+            transfrom_mat[i][j] = value
+    inv_transfrom_mat = np.linalg.inv(transfrom_mat)
+    return inv_transfrom_mat
+
 def main(TRAINSET_PATH):
     
     for scene_dir in os.listdir(TRAINSET_PATH):
@@ -76,9 +98,12 @@ def main(TRAINSET_PATH):
                 continue
             video_path  = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "vdo.avi")
             gt_path     = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "gt/gt.txt")
-            image_path  = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "reid_images")
-            output_path = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "det_gps_feature.txt")
+            image_path  = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "gt_images")
+            cali_file   = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "calibration.txt")
+            output_file = os.path.join(TRAINSET_PATH, scene_dir, camera_dir, "gt_gps_file.txt")
             
+            trans_mat = analysis_transfrom_mat(cali_file)
+
             cap = cv2.VideoCapture(video_path)
             gt = np.loadtxt(gt_path, delimiter=",")
 
@@ -86,6 +111,9 @@ def main(TRAINSET_PATH):
             i = 0
             (fnum, id, left, top, width, height) = gt[i][:6]
             
+            if os.path.exists(output_file):
+                os.remove(output_file)
+
             while cap.isOpened():
                 try :
                     ret, frame = cap.read()
@@ -110,13 +138,17 @@ def main(TRAINSET_PATH):
                     (fnum, id, left, top, width, height) = gt[i][:6]
                 
                 boxes, ids = preprocess_boxes(boxes, ids)
-                crop(frame, boxes, ids, image_path)
+                data = crop(fnum, frame, boxes, ids, image_path, trans_mat)
+                with open(output_file, "a+") as f:
+                    for d in data:
+                        f.write(d + "\n")
+
 
             cap.release()
 
     print ("Finish")
 
 if __name__ == "__main__":
-    for path in ["validation"]:
+    for path in ["train", "validation"]:
 
         main(os.path.join(cfg.PATH.ROOT_PATH, path))
