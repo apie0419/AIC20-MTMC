@@ -8,8 +8,8 @@ def make_loss(cfg):
         torch.cuda.set_device(cfg.MODEL.CUDA)
         focal = focal.cuda()
     
-    def loss_func(dist, assign):
+    def loss_func(dist, target):
         # return F.cross_entropy(dist, assign)
-        return focal(dist, assign)
+        return focal(dist, target)
         
     return loss_func

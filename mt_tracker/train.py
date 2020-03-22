@@ -9,7 +9,7 @@ from ignite.engine import Engine, Events
 from ignite.handlers import ModelCheckpoint, Timer
 from ignite.metrics import RunningAverage
 
-def create_supervised_trainer(model, optimizer, loss_fn, device=None):
+def create_trainer(model, optimizer, loss_fn, device=None):
     
     if device:
         model.to(device)
@@ -18,7 +18,7 @@ def create_supervised_trainer(model, optimizer, loss_fn, device=None):
         model.train()
         
         data, target = batch
-        
+
         data = data.cuda()
         target = target.cuda()
         output = model(data)
@@ -27,8 +27,29 @@ def create_supervised_trainer(model, optimizer, loss_fn, device=None):
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
+        acc = (output.max(1)[1] == target).float().mean()
 
-        return loss.item()
+        return loss.item(), acc.item()
+
+    return Engine(_update)
+
+def create_evaluator(model, device=None):
+    
+    if device:
+        model.to(device)
+
+    def _update(engine, batch):
+        model.eval()
+        
+        data, target = batch
+
+        data = data.cuda()
+        target = target.cuda()
+        output = model(data)
+        
+        acc = (output.max(1)[1] == target).float().mean()
+
+        return acc.item()
 
     return Engine(_update)
 
@@ -36,6 +57,7 @@ def do_train(
         cfg,
         model,
         train_loader,
+        val_loader,
         optimizer,
         scheduler,
         loss_fn
@@ -52,8 +74,8 @@ def do_train(
         
     logger = logging.getLogger("tracker.train")
     logger.info("Start Training")
-    trainer = create_supervised_trainer(model, optimizer, loss_fn, device=device)
-    # evaluator = create_supervised_evaluator(model, metrics={'r1_mAP': R1_mAP(num_query)}, device=device)
+    trainer = create_trainer(model, optimizer, loss_fn, device=device)
+    evaluator = create_evaluator(model, device=device)
     checkpointer = ModelCheckpoint(dirname=output_dir, filename_prefix=cfg.MODEL.NAME, n_saved=None, require_empty=False)
     timer = Timer(average=True)
 
@@ -63,8 +85,9 @@ def do_train(
                  pause=Events.ITERATION_COMPLETED, step=Events.ITERATION_COMPLETED)
 
     # average metric to attach on trainer
-    RunningAverage(output_transform=lambda x: x).attach(trainer, 'avg_loss')
-    RunningAverage(output_transform=lambda x: x).attach(trainer, 'avg_acc')
+    RunningAverage(output_transform=lambda x: x[0]).attach(trainer, 'avg_loss')
+    RunningAverage(output_transform=lambda x: x[1]).attach(trainer, 'avg_acc')
+    RunningAverage(output_transform=lambda x: x[0]).attach(evaluator, 'avg_acc')
 
     @trainer.on(Events.EPOCH_COMPLETED)
     def adjust_learning_rate(engine):
@@ -73,12 +96,11 @@ def do_train(
     @trainer.on(Events.ITERATION_COMPLETED)
     def log_training_loss(engine):
         iter = (engine.state.iteration - 1) % len(train_loader) + 1
-
         if iter % log_period == 0:
             logger.info("Epoch[{}] Iteration[{}/{}] Loss: {:.3f}, Accuracy: {:.3f},  Base Lr: {:.2e}"
                         .format(engine.state.epoch, iter, len(train_loader),
                                 engine.state.metrics['avg_loss'],
-                                engine.state.metrics['avg_acc']
+                                engine.state.metrics['avg_acc'],
                                 scheduler.get_lr()[0]))
 
     @trainer.on(Events.EPOCH_COMPLETED)
@@ -89,15 +111,11 @@ def do_train(
         logger.info('-' * 10)
         timer.reset()
 
-    # @trainer.on(Events.EPOCH_COMPLETED)
-    # def log_validation_results(engine):
-    #     if engine.state.epoch % eval_period == 0:
-    #         # evaluator.run(val_loader)
-    #         # cmc, mAP = evaluator.state.metrics['r1_mAP']
-    #         logger.info("Validation Results - Epoch: {}".format(engine.state.epoch))
-    #         logger.info("mAP: {:.1%}".format(mAP))
-    #         for r in [1, 5, 10]:
-    #             logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def log_validation_results(engine):
+        if engine.state.epoch % eval_period == 0:
+            logger.info("Validation Results - Epoch: {}".format(engine.state.epoch))
+            logger.info("Accuracy: {:.1%}".format(engine.state.metrics['avg_acc']))
 
     trainer.run(train_loader, max_epochs=epochs)
 
@@ -110,7 +128,7 @@ def main():
     logger.info("Running with config:\n{}".format(cfg))
     torch.backends.cudnn.benchmark = True
 
-    train_loader = make_data_loader(cfg)
+    train_loader, val_loader = make_data_loader(cfg)
 
     model = build_model(cfg)
     optimizer = make_optimizer(cfg, model)
@@ -123,6 +141,7 @@ def main():
         cfg,
         model,
         train_loader,
+        val_loader,
         optimizer,
         scheduler,
         loss_func

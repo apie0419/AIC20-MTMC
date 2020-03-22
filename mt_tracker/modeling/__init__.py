@@ -1,5 +1,5 @@
-from .model import MTC
+from .model import MCT
 
 def build_model(cfg):
-    model = MTC(cfg.MODEL.HIDDEN_DIM)
+    model = MCT(cfg.MODEL.HIDDEN_DIM)
     return model
