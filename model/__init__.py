@@ -1,7 +1,7 @@
 import torch
 import torchvision.transforms as T
 from .reid import Baseline
-from .mtmc import MTC
+from .mtmc import MCT
 
 
 def build_reid_model(cfg):
@@ -16,11 +16,11 @@ def build_reid_model(cfg):
 def build_mtmc_model(cfg):
     WEIGHT = cfg.MTMC.MODEL_PATH
     weight = torch.load(WEIGHT)
-    model = MTC(cfg.MTMC.HIDDEN_DIM)
+    model = MCT(cfg.MTMC.HIDDEN_DIM)
     model.load_state_dict(weight)
     return model
 
-def build_transforms():
+def build_transforms(cfg):
     normalize_transform = T.Normalize(mean=cfg.REID.PIXEL_MEAN, std=cfg.REID.PIXEL_STD)
     
     transform = T.Compose([

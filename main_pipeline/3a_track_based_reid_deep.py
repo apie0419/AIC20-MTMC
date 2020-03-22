@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
-# author: peilun
-# 匹配跨视频的track
-# 19
+
 import numpy as np
-import os, math, operator, sys
-from matplotlib import pyplot as plt
+import os, math, operator, sys, torch
 
 sys.path.append("..")
 
@@ -20,6 +16,7 @@ MOVE_TH = 4  # todo 待修订
 ALL_TIME = 210
 TIME_TH = 4.5
 SCALE = 10.0
+
 
 class Box(object):
     """
@@ -69,22 +66,6 @@ class Track(object):
 
     def append(self, box):
         self.sequence.append(box)
-        # if box.camera not in self.cams:
-        #     self.cams.append(box.camera)
-
-    # todo 待修改
-    # def update(self, tk):
-    #     for bx in tk.sequence:
-    #         bx.id = self.id
-    #         self.append(bx)
-    #
-    #     subscriber_mv = tk.gps_move_vec*10000
-    #     master_mv = self.gps_move_vec*10000
-    #     subscriber_dis = subscriber_mv[0] ** 2 + subscriber_mv[1] ** 2
-    #     master_dis = master_mv[0] ** 2 + master_mv[1] ** 2
-    #     if subscriber_dis > master_dis:
-    #         print 'move vec changed: ', master_mv, ' to ', subscriber_mv
-    #         self.gps_move_vec = tk.gps_move_vec
 
     def get_last(self):
         return self.sequence[-1]
@@ -163,28 +144,6 @@ class Track(object):
         return [self.sequence[0].time, self.sequence[-1].time]
 
 
-def calu_feature_distance(ft0, ft1):
-    feature_dis_vec = ft1 - ft0
-    feature_dis = np.dot(feature_dis_vec.T, feature_dis_vec)
-    return feature_dis
-
-
-# 计算两个track之间的特征距离，选最小的特征差距作为距离
-def calu_track_feature_distance(tk0, tk1):
-    ft_list0 = tk0.feature_list
-    ft_list1 = tk1.feature_list
-
-    min_dis = 99999999
-    mean_dis = 0.0
-    for ft0 in ft_list0:
-        for ft1 in ft_list1:
-            dis = calu_feature_distance(ft0, ft1)
-            mean_dis += dis
-            if dis < min_dis:
-                min_dis = dis
-    return min_dis
-
-
 def analysis_to_track_dict(file_path):
     camera = file_path.split('/')[-2]
     track_dict = {}
@@ -213,107 +172,103 @@ def analysis_to_track_dict(file_path):
         track_dict[id].sequence.sort(key=cmpfun)
     return track_dict
 
+def match_track(model, q_tracks, g_tracks):
+    ranks = list()
+    for qt in q_tracks:
+        rank = list()
+        for gt in g_tracks:
+            with torch.no_grad():
+                model.eval()
+                m = torch.nn.Softmax(dim=1)
+                feature = torch.FloatTensor(qt.average_feature.tolist()[:-1] + gt.average_feature.tolist()[:-1]).view(1, cfg.MTMC.HIDDEN_DIM)
+                prob = m(model(feature))[0][1]
+                rank.append([gt.id, prob])
+                
+        rank = sorted(rank, key=lambda x: x[1], reverse=True)
+        ranks.append([qt, rank])
 
-# 参数依次为list,抬头,X轴标签,Y轴标签,XY轴的范围
-def draw_hist(myList, Title, Xlabel, Ylabel, Xmin, Xmax, Ymin, Ymax):
-    plt.hist(myList, 100)
-    plt.xlabel(Xlabel)
-    plt.xlim(Xmin, Xmax)
-    plt.ylabel(Ylabel)
-    plt.ylim(Ymin, Ymax)
-    plt.title(Title)
-    plt.show()
+    already_matched = list()
+    num_tracks = len(g_tracks)
+    for i in range(num_tracks):
+        match = dict()
+        for j in range(len(ranks)):
+            rank = ranks[j]
+            if rank == None:
+                continue
+            match_id = rank[1][i][0]
+            if match_id in already_matched:
+                continue
+            prob = rank[1][i][1]
+            if prob < 0.5:
+                continue
+            if match_id not in match:
+                match[match_id] = [[j, prob]]
+            else:
+                match[match_id].append([j, prob])
+
+        for match_id in match:
+            
+            match_rank = sorted(match[match_id], key=lambda x: x[1], reverse=True)
+            idx = match_rank[0][0]
+            qt = ranks[idx][0]
+            qt.id = match_id
+            already_matched.append(match_id)
+            ranks[idx] = None
 
 
 def main():
 
     scene_dirs = []
     scene_fds = os.listdir(input_dir)
+    result_file = os.path.join(cfg.PATH.ROOT_PATH, 'submission')
+    if os.path.exists(result_file):
+        os.remove(result_file
+        )
     for scene_fd in scene_fds:
         if scene_fd.startswith("S0"):
             scene_dirs.append(os.path.join(input_dir, scene_fd))
     for scene_dir in scene_dirs:
-        # if scene_dir != './aic19-track1-mtmc/test/S02':
-        #     continue
-        # 每个场景应该保留一个整体的距离排名文件
-        ranked_file = os.path.join(scene_dir, 'ranked')
-        camera_dirs = []
-        track_list = []
+        
+        camera_dirs, all_track = list(), dict()
         fds = os.listdir(scene_dir)
         for fd in fds:
             if fd.startswith('c0'):
                 camera_dirs.append(os.path.join(scene_dir, fd))
         for camera_dir in camera_dirs:
             print(camera_dir)
+            camid = int(camera_dir.split("/")[-1][2:])
             track_file_path = os.path.join(camera_dir, 'optimized_track_no_overlapped.txt')
             tk_dict = analysis_to_track_dict(track_file_path)
+            track_list = list()
             for k in tk_dict:
                 track_list.append(tk_dict[k])
+            all_track[camid] = track_list
 
-        # 构建id的顺序字典，并计算平均特征
         print("calu average feature.")
-        id_order_dict = {}
-        l = len(track_list)
-        for i in range(l):
-            tk = track_list[i]
-            id_order_dict[tk.id] = i
-            tk.average_feature = tk.get_average_feature()
-            tk.feature_list = tk.get_feature_list()
+        for c in all_track:
+            l = len(all_track[c])
+            for i in range(l):
+                tk = all_track[c][i]
+                tk.average_feature = tk.get_average_feature()
 
-        # 构建特征距离矩阵
-        print("calu distence mat")
-        distence_mat = np.zeros((l, l))
-        for i in range(l):
-            print(i)
-            cur_tk = track_list[i]
-            for j in range(l):
-                cpr_tk = track_list[j]
-                dis = calu_feature_distance(cur_tk.average_feature, cpr_tk.average_feature)
-                distence_mat[i][j] = dis
-
-        # 展示同track内的距离
-        inner_total_dis = []
-        for tk in track_list:
-            boxes = tk.sequence
-            for i in range(1, len(boxes)):
-                inner_dis = calu_feature_distance(boxes[i].feature, boxes[i - 1].feature)
-                # print "inner dis: ", inner_dis
-                inner_total_dis.append(inner_dis)
-        # draw_hist(inner_total_dis, 'inner dis', 'dis', 'number', 0.0, 400, 0.0, 60000)  # 直方图展示
- 
+        model = build_mtmc_model(cfg)
         
-        print("calu average feature.")
-        id_order_dict = {}
-        l = len(track_list)
-        for i in range(l):
-            tk = track_list[i]
-            id_order_dict[tk.id] = i
-            tk.average_feature = tk.get_average_feature()
-            tk.feature_list = tk.get_feature_list()
-
-        # 保存ranking结果
-        f = open(ranked_file, 'w')
-        for cur_tk in track_list:
-            print(track_list.index(cur_tk))
-            dis_dict = {}
-            for cpr_tk in track_list:
-                if cur_tk.cams == cpr_tk.cams:
-                    dis = 9999.0
-                else:
-                    dis = calu_track_feature_distance(cur_tk, cpr_tk) * SCALE
-                    # dis = calu_feature_distance(cur_tk.average_feature, cpr_tk.average_feature)*SCALE
-                dis_dict[cpr_tk.id] = dis
-
-            dis_dict[cur_tk.id] = 0.0
-            ranked_list = sorted(dis_dict.items(), key=lambda x: x[1])
-
-            ww = str(cur_tk.id)
-            for i in range(1, len(ranked_list)):
-                item = ranked_list[i]
-                ww += ' ' + str(item[0]) + '_' + str(int(item[1]))
-            ww += '\n'
-            f.write(ww)
-        f.close()
+        cams = sorted(list(all_track.keys()))
+        for i in range(1, len(cams)):
+            q_camid = cams[i]
+            for g_camid in cams[:i]:
+                match_track(model, all_track[q_camid], all_track[g_camid])
+        
+        with open(result_file, 'a+') as f:
+            for camid in all_track:
+                for track in all_track[camid]:
+                    cam = track.get_camera()
+                    _id = track.id
+                    for bx in track.sequence:
+                        frame_id = bx.frame_index
+                        ww = cam + "," + str(_id) + "," + str(frame_id) + "," + str(bx.box[0]) + \
+                        "," + str(bx.box[1]) + "," + str(bx.box[2]) + "," + str(bx.box[3]) + ",-1,-1\n"
+                        f.write(ww)
 
 
 if __name__ == '__main__':

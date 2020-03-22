@@ -1,4 +1,4 @@
-2020-03-23 00:58:43,165 tracker INFO: Running with config:
+2020-03-23 05:02:38,825 tracker INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
   NUM_WORKERS: 8
@@ -7,7 +7,7 @@ DATASETS:
 MODEL:
   CUDA: 1
   DEVICE: cuda
-  HIDDEN_DIM: 4094
+  HIDDEN_DIM: 4096
   NAME: mtmc
   OUTPUT_DIR: /home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc
 PATH:
@@ -33,190 +33,7 @@ SOLVER:
   WEIGHT_DECAY_BIAS: 0.0005
 TEST:
   IMS_PER_BATCH: 128
-2020-03-23 01:05:44,928 tracker.train INFO: Start Training
-2020-03-23 01:06:05,217 tracker.train INFO: Epoch[1] Iteration[1000/90364] Loss: 0.214, Accuracy: 0.843,  Base Lr: 1.00e-05
-2020-03-23 01:06:15,742 tracker.train INFO: Epoch[1] Iteration[2000/90364] Loss: 0.138, Accuracy: 0.867,  Base Lr: 1.00e-05
-2020-03-23 01:06:26,752 tracker.train INFO: Epoch[1] Iteration[3000/90364] Loss: 0.094, Accuracy: 0.897,  Base Lr: 1.00e-05
-2020-03-23 01:06:37,109 tracker.train INFO: Epoch[1] Iteration[4000/90364] Loss: 0.061, Accuracy: 0.927,  Base Lr: 1.00e-05
-2020-03-23 01:06:47,504 tracker.train INFO: Epoch[1] Iteration[5000/90364] Loss: 0.053, Accuracy: 0.935,  Base Lr: 1.00e-05
-2020-03-23 01:06:57,489 tracker.train INFO: Epoch[1] Iteration[6000/90364] Loss: 0.044, Accuracy: 0.946,  Base Lr: 1.00e-05
-2020-03-23 01:07:07,423 tracker.train INFO: Epoch[1] Iteration[7000/90364] Loss: 0.038, Accuracy: 0.954,  Base Lr: 1.00e-05
-2020-03-23 01:07:17,514 tracker.train INFO: Epoch[1] Iteration[8000/90364] Loss: 0.034, Accuracy: 0.961,  Base Lr: 1.00e-05
-2020-03-23 01:07:27,086 tracker.train INFO: Epoch[1] Iteration[9000/90364] Loss: 0.035, Accuracy: 0.964,  Base Lr: 1.00e-05
-2020-03-23 01:07:37,309 tracker.train INFO: Epoch[1] Iteration[10000/90364] Loss: 0.031, Accuracy: 0.962,  Base Lr: 1.00e-05
-2020-03-23 01:07:47,572 tracker.train INFO: Epoch[1] Iteration[11000/90364] Loss: 0.027, Accuracy: 0.970,  Base Lr: 1.00e-05
-2020-03-23 01:07:57,852 tracker.train INFO: Epoch[1] Iteration[12000/90364] Loss: 0.031, Accuracy: 0.968,  Base Lr: 1.00e-05
-2020-03-23 01:08:08,085 tracker.train INFO: Epoch[1] Iteration[13000/90364] Loss: 0.026, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:08:18,098 tracker.train INFO: Epoch[1] Iteration[14000/90364] Loss: 0.030, Accuracy: 0.967,  Base Lr: 1.00e-05
-2020-03-23 01:08:28,030 tracker.train INFO: Epoch[1] Iteration[15000/90364] Loss: 0.029, Accuracy: 0.970,  Base Lr: 1.00e-05
-2020-03-23 01:08:37,868 tracker.train INFO: Epoch[1] Iteration[16000/90364] Loss: 0.032, Accuracy: 0.966,  Base Lr: 1.00e-05
-2020-03-23 01:08:48,077 tracker.train INFO: Epoch[1] Iteration[17000/90364] Loss: 0.026, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:08:58,053 tracker.train INFO: Epoch[1] Iteration[18000/90364] Loss: 0.032, Accuracy: 0.968,  Base Lr: 1.00e-05
-2020-03-23 01:09:07,924 tracker.train INFO: Epoch[1] Iteration[19000/90364] Loss: 0.028, Accuracy: 0.971,  Base Lr: 1.00e-05
-2020-03-23 01:09:17,798 tracker.train INFO: Epoch[1] Iteration[20000/90364] Loss: 0.029, Accuracy: 0.971,  Base Lr: 1.00e-05
-2020-03-23 01:09:27,725 tracker.train INFO: Epoch[1] Iteration[21000/90364] Loss: 0.032, Accuracy: 0.967,  Base Lr: 1.00e-05
-2020-03-23 01:09:37,120 tracker.train INFO: Epoch[1] Iteration[22000/90364] Loss: 0.028, Accuracy: 0.971,  Base Lr: 1.00e-05
-2020-03-23 01:09:47,226 tracker.train INFO: Epoch[1] Iteration[23000/90364] Loss: 0.027, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:09:57,353 tracker.train INFO: Epoch[1] Iteration[24000/90364] Loss: 0.030, Accuracy: 0.969,  Base Lr: 1.00e-05
-2020-03-23 01:10:07,452 tracker.train INFO: Epoch[1] Iteration[25000/90364] Loss: 0.031, Accuracy: 0.968,  Base Lr: 1.00e-05
-2020-03-23 01:10:17,468 tracker.train INFO: Epoch[1] Iteration[26000/90364] Loss: 0.028, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:10:27,414 tracker.train INFO: Epoch[1] Iteration[27000/90364] Loss: 0.026, Accuracy: 0.974,  Base Lr: 1.00e-05
-2020-03-23 01:10:37,315 tracker.train INFO: Epoch[1] Iteration[28000/90364] Loss: 0.028, Accuracy: 0.972,  Base Lr: 1.00e-05
-2020-03-23 01:10:47,301 tracker.train INFO: Epoch[1] Iteration[29000/90364] Loss: 0.028, Accuracy: 0.972,  Base Lr: 1.00e-05
-2020-03-23 01:10:57,316 tracker.train INFO: Epoch[1] Iteration[30000/90364] Loss: 0.028, Accuracy: 0.972,  Base Lr: 1.00e-05
-2020-03-23 01:11:07,499 tracker.train INFO: Epoch[1] Iteration[31000/90364] Loss: 0.029, Accuracy: 0.969,  Base Lr: 1.00e-05
-2020-03-23 01:11:17,637 tracker.train INFO: Epoch[1] Iteration[32000/90364] Loss: 0.029, Accuracy: 0.972,  Base Lr: 1.00e-05
-2020-03-23 01:11:27,788 tracker.train INFO: Epoch[1] Iteration[33000/90364] Loss: 0.030, Accuracy: 0.969,  Base Lr: 1.00e-05
-2020-03-23 01:11:37,548 tracker.train INFO: Epoch[1] Iteration[34000/90364] Loss: 0.029, Accuracy: 0.971,  Base Lr: 1.00e-05
-2020-03-23 01:11:47,747 tracker.train INFO: Epoch[1] Iteration[35000/90364] Loss: 0.029, Accuracy: 0.972,  Base Lr: 1.00e-05
-2020-03-23 01:11:57,585 tracker.train INFO: Epoch[1] Iteration[36000/90364] Loss: 0.028, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:12:07,396 tracker.train INFO: Epoch[1] Iteration[37000/90364] Loss: 0.028, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:12:17,435 tracker.train INFO: Epoch[1] Iteration[38000/90364] Loss: 0.028, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:12:26,850 tracker.train INFO: Epoch[1] Iteration[39000/90364] Loss: 0.027, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:12:36,922 tracker.train INFO: Epoch[1] Iteration[40000/90364] Loss: 0.029, Accuracy: 0.972,  Base Lr: 1.00e-05
-2020-03-23 01:12:46,656 tracker.train INFO: Epoch[1] Iteration[41000/90364] Loss: 0.029, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:12:56,835 tracker.train INFO: Epoch[1] Iteration[42000/90364] Loss: 0.029, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:13:06,971 tracker.train INFO: Epoch[1] Iteration[43000/90364] Loss: 0.027, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:13:16,836 tracker.train INFO: Epoch[1] Iteration[44000/90364] Loss: 0.027, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:13:27,001 tracker.train INFO: Epoch[1] Iteration[45000/90364] Loss: 0.033, Accuracy: 0.969,  Base Lr: 1.00e-05
-2020-03-23 01:13:36,895 tracker.train INFO: Epoch[1] Iteration[46000/90364] Loss: 0.028, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:13:46,641 tracker.train INFO: Epoch[1] Iteration[47000/90364] Loss: 0.029, Accuracy: 0.974,  Base Lr: 1.00e-05
-2020-03-23 01:13:56,646 tracker.train INFO: Epoch[1] Iteration[48000/90364] Loss: 0.028, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:14:06,567 tracker.train INFO: Epoch[1] Iteration[49000/90364] Loss: 0.028, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:14:16,545 tracker.train INFO: Epoch[1] Iteration[50000/90364] Loss: 0.027, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:14:26,250 tracker.train INFO: Epoch[1] Iteration[51000/90364] Loss: 0.029, Accuracy: 0.974,  Base Lr: 1.00e-05
-2020-03-23 01:14:36,324 tracker.train INFO: Epoch[1] Iteration[52000/90364] Loss: 0.028, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:14:46,182 tracker.train INFO: Epoch[1] Iteration[53000/90364] Loss: 0.026, Accuracy: 0.979,  Base Lr: 1.00e-05
-2020-03-23 01:14:56,304 tracker.train INFO: Epoch[1] Iteration[54000/90364] Loss: 0.029, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:15:06,351 tracker.train INFO: Epoch[1] Iteration[55000/90364] Loss: 0.030, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:15:16,637 tracker.train INFO: Epoch[1] Iteration[56000/90364] Loss: 0.030, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:15:26,615 tracker.train INFO: Epoch[1] Iteration[57000/90364] Loss: 0.030, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:15:36,847 tracker.train INFO: Epoch[1] Iteration[58000/90364] Loss: 0.029, Accuracy: 0.974,  Base Lr: 1.00e-05
-2020-03-23 01:15:46,613 tracker.train INFO: Epoch[1] Iteration[59000/90364] Loss: 0.029, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:15:56,396 tracker.train INFO: Epoch[1] Iteration[60000/90364] Loss: 0.028, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:16:06,444 tracker.train INFO: Epoch[1] Iteration[61000/90364] Loss: 0.031, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:16:16,642 tracker.train INFO: Epoch[1] Iteration[62000/90364] Loss: 0.029, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:16:26,862 tracker.train INFO: Epoch[1] Iteration[63000/90364] Loss: 0.029, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:16:37,033 tracker.train INFO: Epoch[1] Iteration[64000/90364] Loss: 0.028, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:16:47,172 tracker.train INFO: Epoch[1] Iteration[65000/90364] Loss: 0.030, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:16:57,125 tracker.train INFO: Epoch[1] Iteration[66000/90364] Loss: 0.032, Accuracy: 0.973,  Base Lr: 1.00e-05
-2020-03-23 01:17:07,201 tracker.train INFO: Epoch[1] Iteration[67000/90364] Loss: 0.029, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:17:17,417 tracker.train INFO: Epoch[1] Iteration[68000/90364] Loss: 0.029, Accuracy: 0.979,  Base Lr: 1.00e-05
-2020-03-23 01:17:27,511 tracker.train INFO: Epoch[1] Iteration[69000/90364] Loss: 0.030, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:17:37,448 tracker.train INFO: Epoch[1] Iteration[70000/90364] Loss: 0.032, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:17:47,546 tracker.train INFO: Epoch[1] Iteration[71000/90364] Loss: 0.031, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:17:57,652 tracker.train INFO: Epoch[1] Iteration[72000/90364] Loss: 0.033, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:18:07,595 tracker.train INFO: Epoch[1] Iteration[73000/90364] Loss: 0.033, Accuracy: 0.975,  Base Lr: 1.00e-05
-2020-03-23 01:18:17,814 tracker.train INFO: Epoch[1] Iteration[74000/90364] Loss: 0.031, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:18:27,772 tracker.train INFO: Epoch[1] Iteration[75000/90364] Loss: 0.033, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:18:37,767 tracker.train INFO: Epoch[1] Iteration[76000/90364] Loss: 0.033, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:18:47,082 tracker.train INFO: Epoch[1] Iteration[77000/90364] Loss: 0.035, Accuracy: 0.974,  Base Lr: 1.00e-05
-2020-03-23 01:18:56,983 tracker.train INFO: Epoch[1] Iteration[78000/90364] Loss: 0.034, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:19:06,397 tracker.train INFO: Epoch[1] Iteration[79000/90364] Loss: 0.034, Accuracy: 0.976,  Base Lr: 1.00e-05
-2020-03-23 01:19:16,501 tracker.train INFO: Epoch[1] Iteration[80000/90364] Loss: 0.032, Accuracy: 0.981,  Base Lr: 1.00e-05
-2020-03-23 01:19:26,816 tracker.train INFO: Epoch[1] Iteration[81000/90364] Loss: 0.035, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:19:36,823 tracker.train INFO: Epoch[1] Iteration[82000/90364] Loss: 0.035, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:19:46,749 tracker.train INFO: Epoch[1] Iteration[83000/90364] Loss: 0.033, Accuracy: 0.981,  Base Lr: 1.00e-05
-2020-03-23 01:19:56,604 tracker.train INFO: Epoch[1] Iteration[84000/90364] Loss: 0.038, Accuracy: 0.974,  Base Lr: 1.00e-05
-2020-03-23 01:20:06,491 tracker.train INFO: Epoch[1] Iteration[85000/90364] Loss: 0.036, Accuracy: 0.979,  Base Lr: 1.00e-05
-2020-03-23 01:20:16,519 tracker.train INFO: Epoch[1] Iteration[86000/90364] Loss: 0.037, Accuracy: 0.978,  Base Lr: 1.00e-05
-2020-03-23 01:20:26,510 tracker.train INFO: Epoch[1] Iteration[87000/90364] Loss: 0.034, Accuracy: 0.981,  Base Lr: 1.00e-05
-2020-03-23 01:20:36,599 tracker.train INFO: Epoch[1] Iteration[88000/90364] Loss: 0.035, Accuracy: 0.981,  Base Lr: 1.00e-05
-2020-03-23 01:20:46,674 tracker.train INFO: Epoch[1] Iteration[89000/90364] Loss: 0.035, Accuracy: 0.981,  Base Lr: 1.00e-05
-2020-03-23 01:20:56,780 tracker.train INFO: Epoch[1] Iteration[90000/90364] Loss: 0.036, Accuracy: 0.981,  Base Lr: 1.00e-05
-2020-03-23 01:21:00,878 tracker.train INFO: Epoch 1 done. Time per batch: 750.750[s] Speed: 15406.7[samples/s]
-2020-03-23 01:21:00,878 tracker.train INFO: ----------
-2020-03-23 01:21:19,532 tracker.train INFO: Epoch[2] Iteration[1000/90364] Loss: 0.037, Accuracy: 0.979,  Base Lr: 1.05e-05
-2020-03-23 01:21:29,512 tracker.train INFO: Epoch[2] Iteration[2000/90364] Loss: 0.037, Accuracy: 0.979,  Base Lr: 1.05e-05
-2020-03-23 01:21:39,483 tracker.train INFO: Epoch[2] Iteration[3000/90364] Loss: 0.035, Accuracy: 0.980,  Base Lr: 1.05e-05
-2020-03-23 01:21:49,614 tracker.train INFO: Epoch[2] Iteration[4000/90364] Loss: 0.036, Accuracy: 0.981,  Base Lr: 1.05e-05
-2020-03-23 01:21:59,513 tracker.train INFO: Epoch[2] Iteration[5000/90364] Loss: 0.036, Accuracy: 0.981,  Base Lr: 1.05e-05
-2020-03-23 01:22:09,526 tracker.train INFO: Epoch[2] Iteration[6000/90364] Loss: 0.036, Accuracy: 0.980,  Base Lr: 1.05e-05
-2020-03-23 01:22:19,265 tracker.train INFO: Epoch[2] Iteration[7000/90364] Loss: 0.038, Accuracy: 0.979,  Base Lr: 1.05e-05
-2020-03-23 01:22:29,174 tracker.train INFO: Epoch[2] Iteration[8000/90364] Loss: 0.036, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:22:39,070 tracker.train INFO: Epoch[2] Iteration[9000/90364] Loss: 0.038, Accuracy: 0.980,  Base Lr: 1.05e-05
-2020-03-23 01:22:49,358 tracker.train INFO: Epoch[2] Iteration[10000/90364] Loss: 0.039, Accuracy: 0.979,  Base Lr: 1.05e-05
-2020-03-23 01:22:59,155 tracker.train INFO: Epoch[2] Iteration[11000/90364] Loss: 0.037, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:23:09,027 tracker.train INFO: Epoch[2] Iteration[12000/90364] Loss: 0.037, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:23:18,981 tracker.train INFO: Epoch[2] Iteration[13000/90364] Loss: 0.035, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:23:28,855 tracker.train INFO: Epoch[2] Iteration[14000/90364] Loss: 0.038, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:23:38,766 tracker.train INFO: Epoch[2] Iteration[15000/90364] Loss: 0.037, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:23:48,684 tracker.train INFO: Epoch[2] Iteration[16000/90364] Loss: 0.038, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:23:58,781 tracker.train INFO: Epoch[2] Iteration[17000/90364] Loss: 0.036, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:24:08,680 tracker.train INFO: Epoch[2] Iteration[18000/90364] Loss: 0.037, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:24:18,338 tracker.train INFO: Epoch[2] Iteration[19000/90364] Loss: 0.037, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:24:28,203 tracker.train INFO: Epoch[2] Iteration[20000/90364] Loss: 0.038, Accuracy: 0.980,  Base Lr: 1.05e-05
-2020-03-23 01:24:37,988 tracker.train INFO: Epoch[2] Iteration[21000/90364] Loss: 0.037, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:24:47,463 tracker.train INFO: Epoch[2] Iteration[22000/90364] Loss: 0.038, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:24:57,061 tracker.train INFO: Epoch[2] Iteration[23000/90364] Loss: 0.036, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:25:06,793 tracker.train INFO: Epoch[2] Iteration[24000/90364] Loss: 0.037, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:25:16,448 tracker.train INFO: Epoch[2] Iteration[25000/90364] Loss: 0.037, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:25:26,283 tracker.train INFO: Epoch[2] Iteration[26000/90364] Loss: 0.038, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:25:36,520 tracker.train INFO: Epoch[2] Iteration[27000/90364] Loss: 0.037, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:25:46,169 tracker.train INFO: Epoch[2] Iteration[28000/90364] Loss: 0.036, Accuracy: 0.987,  Base Lr: 1.05e-05
-2020-03-23 01:25:56,114 tracker.train INFO: Epoch[2] Iteration[29000/90364] Loss: 0.037, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:26:05,819 tracker.train INFO: Epoch[2] Iteration[30000/90364] Loss: 0.041, Accuracy: 0.981,  Base Lr: 1.05e-05
-2020-03-23 01:26:15,659 tracker.train INFO: Epoch[2] Iteration[31000/90364] Loss: 0.039, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:26:24,796 tracker.train INFO: Epoch[2] Iteration[32000/90364] Loss: 0.038, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:26:34,686 tracker.train INFO: Epoch[2] Iteration[33000/90364] Loss: 0.038, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:26:44,368 tracker.train INFO: Epoch[2] Iteration[34000/90364] Loss: 0.037, Accuracy: 0.987,  Base Lr: 1.05e-05
-2020-03-23 01:26:53,883 tracker.train INFO: Epoch[2] Iteration[35000/90364] Loss: 0.039, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:27:03,757 tracker.train INFO: Epoch[2] Iteration[36000/90364] Loss: 0.039, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:27:12,993 tracker.train INFO: Epoch[2] Iteration[37000/90364] Loss: 0.040, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:27:22,705 tracker.train INFO: Epoch[2] Iteration[38000/90364] Loss: 0.041, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:27:32,513 tracker.train INFO: Epoch[2] Iteration[39000/90364] Loss: 0.040, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:27:42,069 tracker.train INFO: Epoch[2] Iteration[40000/90364] Loss: 0.042, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:27:51,769 tracker.train INFO: Epoch[2] Iteration[41000/90364] Loss: 0.040, Accuracy: 0.986,  Base Lr: 1.05e-05
-2020-03-23 01:28:00,825 tracker.train INFO: Epoch[2] Iteration[42000/90364] Loss: 0.041, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:28:10,632 tracker.train INFO: Epoch[2] Iteration[43000/90364] Loss: 0.043, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:28:20,309 tracker.train INFO: Epoch[2] Iteration[44000/90364] Loss: 0.041, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:28:30,132 tracker.train INFO: Epoch[2] Iteration[45000/90364] Loss: 0.042, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:28:40,104 tracker.train INFO: Epoch[2] Iteration[46000/90364] Loss: 0.043, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:28:50,196 tracker.train INFO: Epoch[2] Iteration[47000/90364] Loss: 0.044, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:29:00,229 tracker.train INFO: Epoch[2] Iteration[48000/90364] Loss: 0.043, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:29:10,342 tracker.train INFO: Epoch[2] Iteration[49000/90364] Loss: 0.044, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:29:19,905 tracker.train INFO: Epoch[2] Iteration[50000/90364] Loss: 0.045, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:29:29,281 tracker.train INFO: Epoch[2] Iteration[51000/90364] Loss: 0.046, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:29:38,960 tracker.train INFO: Epoch[2] Iteration[52000/90364] Loss: 0.046, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:29:48,772 tracker.train INFO: Epoch[2] Iteration[53000/90364] Loss: 0.045, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:29:58,572 tracker.train INFO: Epoch[2] Iteration[54000/90364] Loss: 0.045, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:30:08,667 tracker.train INFO: Epoch[2] Iteration[55000/90364] Loss: 0.046, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:30:18,426 tracker.train INFO: Epoch[2] Iteration[56000/90364] Loss: 0.047, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:30:27,735 tracker.train INFO: Epoch[2] Iteration[57000/90364] Loss: 0.048, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:30:37,579 tracker.train INFO: Epoch[2] Iteration[58000/90364] Loss: 0.046, Accuracy: 0.986,  Base Lr: 1.05e-05
-2020-03-23 01:30:47,499 tracker.train INFO: Epoch[2] Iteration[59000/90364] Loss: 0.049, Accuracy: 0.980,  Base Lr: 1.05e-05
-2020-03-23 01:30:57,400 tracker.train INFO: Epoch[2] Iteration[60000/90364] Loss: 0.048, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:31:07,328 tracker.train INFO: Epoch[2] Iteration[61000/90364] Loss: 0.049, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:31:16,922 tracker.train INFO: Epoch[2] Iteration[62000/90364] Loss: 0.049, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:31:26,622 tracker.train INFO: Epoch[2] Iteration[63000/90364] Loss: 0.048, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:31:36,784 tracker.train INFO: Epoch[2] Iteration[64000/90364] Loss: 0.048, Accuracy: 0.988,  Base Lr: 1.05e-05
-2020-03-23 01:31:46,605 tracker.train INFO: Epoch[2] Iteration[65000/90364] Loss: 0.049, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:31:56,491 tracker.train INFO: Epoch[2] Iteration[66000/90364] Loss: 0.050, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:32:06,681 tracker.train INFO: Epoch[2] Iteration[67000/90364] Loss: 0.051, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:32:16,267 tracker.train INFO: Epoch[2] Iteration[68000/90364] Loss: 0.051, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:32:26,232 tracker.train INFO: Epoch[2] Iteration[69000/90364] Loss: 0.053, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:32:36,063 tracker.train INFO: Epoch[2] Iteration[70000/90364] Loss: 0.053, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:32:45,628 tracker.train INFO: Epoch[2] Iteration[71000/90364] Loss: 0.053, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:32:55,696 tracker.train INFO: Epoch[2] Iteration[72000/90364] Loss: 0.052, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:33:05,647 tracker.train INFO: Epoch[2] Iteration[73000/90364] Loss: 0.053, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:33:15,004 tracker.train INFO: Epoch[2] Iteration[74000/90364] Loss: 0.054, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:33:24,823 tracker.train INFO: Epoch[2] Iteration[75000/90364] Loss: 0.055, Accuracy: 0.981,  Base Lr: 1.05e-05
-2020-03-23 01:33:34,869 tracker.train INFO: Epoch[2] Iteration[76000/90364] Loss: 0.055, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:33:44,712 tracker.train INFO: Epoch[2] Iteration[77000/90364] Loss: 0.054, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:33:54,477 tracker.train INFO: Epoch[2] Iteration[78000/90364] Loss: 0.054, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:34:04,233 tracker.train INFO: Epoch[2] Iteration[79000/90364] Loss: 0.054, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:34:14,276 tracker.train INFO: Epoch[2] Iteration[80000/90364] Loss: 0.056, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:34:24,432 tracker.train INFO: Epoch[2] Iteration[81000/90364] Loss: 0.056, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:34:34,420 tracker.train INFO: Epoch[2] Iteration[82000/90364] Loss: 0.055, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:34:44,081 tracker.train INFO: Epoch[2] Iteration[83000/90364] Loss: 0.056, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:34:53,597 tracker.train INFO: Epoch[2] Iteration[84000/90364] Loss: 0.056, Accuracy: 0.985,  Base Lr: 1.05e-05
-2020-03-23 01:35:03,597 tracker.train INFO: Epoch[2] Iteration[85000/90364] Loss: 0.058, Accuracy: 0.980,  Base Lr: 1.05e-05
-2020-03-23 01:35:13,363 tracker.train INFO: Epoch[2] Iteration[86000/90364] Loss: 0.058, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:35:22,936 tracker.train INFO: Epoch[2] Iteration[87000/90364] Loss: 0.057, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:35:32,638 tracker.train INFO: Epoch[2] Iteration[88000/90364] Loss: 0.058, Accuracy: 0.982,  Base Lr: 1.05e-05
-2020-03-23 01:35:42,554 tracker.train INFO: Epoch[2] Iteration[89000/90364] Loss: 0.058, Accuracy: 0.984,  Base Lr: 1.05e-05
-2020-03-23 01:35:52,508 tracker.train INFO: Epoch[2] Iteration[90000/90364] Loss: 0.058, Accuracy: 0.983,  Base Lr: 1.05e-05
-2020-03-23 01:35:56,508 tracker.train INFO: Epoch 2 done. Time per batch: 738.752[s] Speed: 15656.9[samples/s]
-2020-03-23 01:35:56,508 tracker.train INFO: ----------
-2020-03-23 01:35:56,508 tracker.train INFO: Validation Results - Epoch: 2
-2020-03-23 01:35:56,508 tracker.train INFO: Accuracy: 98.1%
+2020-03-23 05:09:53,443 tracker.train INFO: Start Training
+2020-03-23 05:10:14,290 tracker.train INFO: Epoch[1] Iteration[1000/86543] Loss: 0.162, Accuracy: 0.821,  Base Lr: 1.00e-05
+2020-03-23 05:10:24,408 tracker.train INFO: Epoch[1] Iteration[2000/86543] Loss: 0.100, Accuracy: 0.851,  Base Lr: 1.00e-05
+2020-03-23 05:10:34,370 tracker.train INFO: Epoch[1] Iteration[3000/86543] Loss: 0.076, Accuracy: 0.878,  Base Lr: 1.00e-05

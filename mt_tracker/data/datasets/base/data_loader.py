@@ -27,7 +27,7 @@ class FeatureDataset(Dataset):
                 self.all_features[scene_dir][camera_dir] = list()
                 with open(os.path.join(scene_path, camera_dir, "tracker_train_file.txt"), "r") as f:
                     for line in f.readlines():
-                        feature = [float(f) for f in line.split(",")[6:]]
+                        feature = [float(f) for f in line.strip("\n").split(",")[5:]]
                         self.all_features[scene_dir][camera_dir].append(feature)
 
     def __len__(self):

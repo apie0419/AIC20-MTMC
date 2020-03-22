@@ -4,7 +4,7 @@ from PIL import Image
 
 sys.path.append("..")
 
-from model  import build_model, build_transforms
+from model  import build_reid_model, build_transforms
 from config import cfg
 
 INPUT_DIR     = cfg.PATH.ROOT_PATH
@@ -17,10 +17,10 @@ val_dir   = os.path.join(INPUT_DIR, "validation")
 
 def process_data(data_dir):
     scene_dirs = list()
-    model = build_model(cfg)
+    model = build_reid_model(cfg)
     model = model.to(DEVICE)
     model.eval()
-    transform = build_transforms()
+    transform = build_transforms(cfg)
     for dirname in os.listdir(data_dir):
         if dirname.startswith("S0"):
             scene_dirs.append(dirname)
@@ -56,6 +56,7 @@ def process_data(data_dir):
                         img = torch.Tensor(img).view(1, 3, 256, 256).cuda()
                         feature = list(model(img)[0].cpu().numpy())
                         feature = [str(f) for f in feature]
+                        
                         f.write(",".join(line) + "," + ",".join(feature) + "\n")
                         
 if __name__ == '__main__': 

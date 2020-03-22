@@ -5,7 +5,7 @@ MODEL:
   NAME: "mtmc"
   DEVICE: "cuda"
   CUDA: 1
-  HIDDEN_DIM: 4094
+  HIDDEN_DIM: 4096
   OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc"
 
 DATASETS:

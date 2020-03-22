@@ -591,34 +591,6 @@ class MatchPair(object):
         print(self.t0[0], self.t1[0]-self.t0[1], self.cam0 + '-' + self.cam1, self.t0, self.t1)
 
 
-
-def analysis_res_list(res_list):
-    global feature_dict
-    global time_dict
-    global trail_dict
-
-    cam_pair_dict = {}
-    for tkgp in res_list:
-        tk_list = tkgp.track_list
-        for tk0 in tk_list:
-            for tk1 in tk_list:
-                id0 = tk0.id
-                id1 = tk1.id
-                if trail_dict[id0][id1].reach < 150:
-                    cam0 = tk0.cams
-                    cam1 = tk1.cams
-                    key = cam0 + '-' + cam1
-                    if key not in cam_pair_dict:
-                        cam_pair_dict[key] = []
-                    mp = MatchPair(tk0, tk1)
-                    cam_pair_dict[key].append(mp)
-
-    for k in cam_pair_dict:
-        mp_list = cam_pair_dict[k]
-        for mp in mp_list:
-            mp.show_time_diff()
-
-
 def main():
     global near_th
     global ori_add
@@ -635,10 +607,6 @@ def main():
         if scene_fd.startswith("S0"):
             scene_dirs.append(os.path.join(input_dir, scene_fd))
     for scene_dir in scene_dirs:
-        # if scene_dir != './aic19-track1-mtmc/test/S02':
-        #     continue
-        # if scene_dir != './aic19-track1-mtmc/train/S01':
-        #     continue
 
         track_groups_list = []
         camera_dirs = []

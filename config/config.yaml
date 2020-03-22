@@ -1,9 +1,6 @@
 PATH:
   ROOT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
   INPUT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3/train"
-  RESNET_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth"
-  REID_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_didi.pth"
-  MTMC_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model.pth"
 
 DEVICE:
   TYPE: "cuda" 
@@ -11,7 +8,7 @@ DEVICE:
 
 REID:
   RESNET_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth"
-  REID_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_didi.pth"
+  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_didi.pth"
   PIXEL_MEAN: [0.485, 0.456, 0.406]
   PIXEL_STD: [0.229, 0.224, 0.225]
   SIZE_TEST: [256,256]
