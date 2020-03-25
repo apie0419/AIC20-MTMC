@@ -3,3 +3,4 @@ dataset/
 *.pth
 nohup.out
 export_dir/
+test/
