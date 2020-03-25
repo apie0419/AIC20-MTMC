@@ -4,7 +4,7 @@ from PIL              import Image
 
 sys.path.append("..")
 
-from model import build_transforms, build_model
+from model import build_transforms, build_reid_model
 from config     import cfg
 
 INPUT_DIR     = cfg.PATH.INPUT_PATH
@@ -91,8 +91,8 @@ def _inference(model, data_loader):
     
 if __name__ == "__main__":
     imgs = _process_data()
-    transforms = build_transforms()
-    model = build_model(cfg)
+    transforms = build_transforms(cfg)
+    model = build_reid_model(cfg)
     model = model.to(DEVICE)
     dataset = ImageDataset(imgs, transforms)
     dataloader = DataLoader(dataset, batch_size=IMS_PER_BATCH, shuffle=False, num_workers=NUM_WORKERS, collate_fn=collate_fn)

@@ -166,12 +166,20 @@ for scene_dir in scene_dirs:
             frame_dict[frame] = res_list
 
         f = open(out_path, 'w')
+        
+        output_path = os.path.join(cfg.PATH.ROOT_PATH, "AIC20_res_sg")
+        if not os.path.exists(output_path):
+            os.makedirs(output_path, exist_ok=True)
+        camid = camera_dir.split("/")[-1]
 
         for frame in frame_dict:
             bx_list = frame_dict[frame]
             for bx in bx_list:
                 bbox = bx.box
+                
                 ww = bx.frame_index + ',' + bx.id + ',' + str(bbox[0]) + ',' + str(bbox[1]) + ',' + str(bbox[2]) + ',' + str(bbox[3])
+                with open(os.path.join(output_path, camid + "_train.txt"), "a") as fs:
+                    fs.write(ww + ",-1,-1" + "\n")
                 for w in bx.fts:
                     ww += ',' + w
                 ww += '\n'

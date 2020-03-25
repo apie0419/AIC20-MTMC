@@ -35,7 +35,7 @@ def write_video(videodir, framelist ,fps, resolution):
 def main():
     scene_paths = os.listdir(os.path.join(BASE_PATH, dirname))
     for s in scene_paths:
-        if not s.startswith("S0"):
+        if not s.startswith("S01"):
             continue
         video_paths = os.listdir(os.path.join(BASE_PATH, dirname, s))
         for p in video_paths:
@@ -44,7 +44,7 @@ def main():
             videodir = os.path.join(BASE_PATH, dirname, s, p)
             print ("Processing " + videodir + "...")
             cap = cv2.VideoCapture(os.path.join(videodir, "vdo.avi"))
-            resolution = (int(cap.get(4) * 0.5), int(cap.get(3) * 0.5))
+            resolution = (int(cap.get(4)), int(cap.get(3)))
             
             fps = cap.get(cv2.CAP_PROP_FPS)
             framelist = list()
@@ -72,7 +72,7 @@ def main():
                     cv2.putText(frame, str(id), (x, y-10), cv2.FONT_HERSHEY_PLAIN, 4, color, 3)
                 width, height, _ = frame.shape
                 
-                frame = cv2.resize(frame, (int(width * 0.5), int(height * 0.5)))
+                frame = cv2.resize(frame, (int(width), int(height)))
                 out.write(frame)
                 # framelist.append(frame)
                 # cv2.imwrite("test.jpg", frame)

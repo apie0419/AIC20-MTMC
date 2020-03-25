@@ -1,6 +1,6 @@
 import torch, os, logging
 from config import cfg
-from data import make_data_loader
+from data import make_train_loader, make_val_loader
 from layers import make_loss
 from solver import make_optimizer, WarmupMultiStepLR
 from modeling import build_model
@@ -87,7 +87,7 @@ def do_train(
     # average metric to attach on trainer
     RunningAverage(output_transform=lambda x: x[0]).attach(trainer, 'avg_loss')
     RunningAverage(output_transform=lambda x: x[1]).attach(trainer, 'avg_acc')
-    RunningAverage(output_transform=lambda x: x[0]).attach(evaluator, 'avg_acc')
+    RunningAverage(output_transform=lambda x: x[0]).attach(evaluator, 'eva_avg_acc')
 
     @trainer.on(Events.EPOCH_COMPLETED)
     def adjust_learning_rate(engine):
@@ -115,7 +115,7 @@ def do_train(
     def log_validation_results(engine):
         if engine.state.epoch % eval_period == 0:
             logger.info("Validation Results - Epoch: {}".format(engine.state.epoch))
-            logger.info("Accuracy: {:.1%}".format(engine.state.metrics['avg_acc']))
+            logger.info("Accuracy: {:.1%}".format(engine.state.metrics['eva_avg_acc']))
 
     trainer.run(train_loader, max_epochs=epochs)
 
@@ -128,9 +128,10 @@ def main():
     logger.info("Running with config:\n{}".format(cfg))
     torch.backends.cudnn.benchmark = True
 
-    train_loader, val_loader = make_data_loader(cfg)
+    train_loader, val_loader = make_train_loader(cfg), make_val_loader(cfg)
 
     model = build_model(cfg)
+
     optimizer = make_optimizer(cfg, model)
     scheduler = WarmupMultiStepLR(optimizer, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA, cfg.SOLVER.WARMUP_FACTOR,
                                   cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)

@@ -6,18 +6,19 @@ MODEL:
   DEVICE: "cuda"
   CUDA: 1
   HIDDEN_DIM: 4096
-  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc"
+  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-2"
+  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3.pth"
 
 DATASETS:
   NAME: 'mtmc'
 
 DATALOADER:
   NUM_INSTANCE: 4
-  NUM_WORKERS: 8
+  NUM_WORKERS: 2
 
 SOLVER:
   OPTIMIZER_NAME: 'Adam'
-  MAX_EPOCHS: 2
+  MAX_EPOCHS: 5
   BASE_LR: 0.001
   BIAS_LR_FACTOR: 1
   WEIGHT_DECAY: 0.05
@@ -31,6 +32,6 @@ SOLVER:
   WARMUP_ITERS: 2000
   WARMUP_METHOD: 'linear'
 
-  CHECKPOINT_PERIOD: 2
+  CHECKPOINT_PERIOD: 5
   LOG_PERIOD: 1000
-  EVAL_PERIOD: 2
+  EVAL_PERIOD: 5

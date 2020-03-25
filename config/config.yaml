@@ -8,12 +8,12 @@ DEVICE:
 
 REID:
   RESNET_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth"
-  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_didi.pth"
+  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_t2t3.pth"
   PIXEL_MEAN: [0.485, 0.456, 0.406]
   PIXEL_STD: [0.229, 0.224, 0.225]
   SIZE_TEST: [256,256]
   LAST_STRIDE: 1
 
 MTMC:
-  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model.pth"
-  HIDDEN_DIM: 4094
+  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3.pth"
+  HIDDEN_DIM: 4096

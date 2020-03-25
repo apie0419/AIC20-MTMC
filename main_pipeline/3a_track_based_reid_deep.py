@@ -179,8 +179,10 @@ def match_track(model, q_tracks, g_tracks):
         for gt in g_tracks:
             with torch.no_grad():
                 model.eval()
+                model.to(cfg.DEVICE.TYPE)
+
                 m = torch.nn.Softmax(dim=1)
-                feature = torch.FloatTensor(qt.average_feature.tolist()[:-1] + gt.average_feature.tolist()[:-1]).view(1, cfg.MTMC.HIDDEN_DIM)
+                feature = torch.FloatTensor(qt.average_feature.tolist() + gt.average_feature.tolist()).view(1, cfg.MTMC.HIDDEN_DIM).cuda()
                 prob = m(model(feature))[0][1]
                 rank.append([gt.id, prob])
                 
@@ -207,7 +209,7 @@ def match_track(model, q_tracks, g_tracks):
                 match[match_id].append([j, prob])
 
         for match_id in match:
-            
+
             match_rank = sorted(match[match_id], key=lambda x: x[1], reverse=True)
             idx = match_rank[0][0]
             qt = ranks[idx][0]
@@ -256,8 +258,11 @@ def main():
         cams = sorted(list(all_track.keys()))
         for i in range(1, len(cams)):
             q_camid = cams[i]
+            q_tracks = all_track[q_camid]
+            g_tracks = list()
             for g_camid in cams[:i]:
-                match_track(model, all_track[q_camid], all_track[g_camid])
+                g_tracks += all_track[g_camid]
+            match_track(model, q_tracks, g_tracks)
         
         with open(result_file, 'a+') as f:
             for camid in all_track:

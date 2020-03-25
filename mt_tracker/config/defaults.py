@@ -18,6 +18,8 @@ _C.MODEL.DEVICE = "<cuda or cpu>"
 _C.MODEL.OUTPUT_DIR = "<save train weight path>"
 _C.MODEL.NAME = "<model name>"
 _C.MODEL.HIDDEN_DIM = 128 # hidden layer size
+_C.MODEL.TEST_MODEL = "<test model path>"
+
 
 _C.DATASETS.NAME = "<dataset name>"
 
