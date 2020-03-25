@@ -24,7 +24,7 @@ class aic20_t3(BaseImageDataset):
                 if not camera_dir.startswith("c0"):
                     continue
                 camid = int(camera_dir[1:])
-                data_dir = os.path.join(self.train_dir, scene_dir, camera_dir, "reid_images")
+                data_dir = os.path.join(self.train_dir, scene_dir, camera_dir, "gt_images")
                 for vid in os.listdir(data_dir):
                     img_list = os.listdir(os.path.join(data_dir, vid))
                     vids.extend([vid] * len(img_list))
