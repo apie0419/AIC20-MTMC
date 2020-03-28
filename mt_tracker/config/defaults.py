@@ -9,6 +9,7 @@ _C.MODEL = CN()
 _C.DATASETS = CN()
 _C.SOLVER = CN()
 _C.DATALOADER = CN()
+_C.INPUT = CN()
 
 _C.PATH.ROOT_PATH = '<path_project_dir>'
 _C.PATH.INPUT_PATH = '<path_to_input_path>' # train or test
@@ -52,6 +53,11 @@ _C.SOLVER.WARMUP_METHOD = "linear"
 _C.SOLVER.CHECKPOINT_PERIOD = 50
 _C.SOLVER.LOG_PERIOD = 100
 _C.SOLVER.EVAL_PERIOD = 50
+
+_C.INPUT.TS_STD = [38.03783, 38.19534]
+_C.INPUT.TS_MEAN = [27.26076, 25.96027]
+_C.INPUT.GPS_STD = [0.00013765, 0.00013720, 0.00057203]
+_C.INPUT.GPS_MEAN = [0.000005636, 0.000005611, 0.000002973]
 
 
 _C.merge_from_file(os.path.join(BASE_PATH, "config.yaml"))

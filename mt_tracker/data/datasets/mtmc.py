@@ -142,4 +142,16 @@ class mtmc(object):
 
 if __name__ == "__main__":
     dataset = mtmc()
-    print (len(dataset.trainset), len(dataset.valset))
+    trainset = np.array(dataset.trainset)
+    print (trainset[:, 2].mean(), trainset[:, 2].std())
+    print (trainset[:, 3].mean(), trainset[:, 3].std())
+    print (trainset[:, 4].mean(), trainset[:, 4].std())
+    print (trainset[:, 5].mean(), trainset[:, 5].std())
+    print (trainset[:, 6].mean(), trainset[:, 6].std())
+    """
+    5.636946243413381e-05 0.00013657720170511732
+    5.611853823862016e-05 0.0001372030191373347
+    2.797372882596438e-05 0.0005720367961958972
+    27.260769012485873 38.03783122595934
+    25.960272417707124 38.19534731865891
+    """
