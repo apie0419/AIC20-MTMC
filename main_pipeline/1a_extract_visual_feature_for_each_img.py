@@ -61,7 +61,7 @@ def _process_data():
         for camera_dir in os.listdir(os.path.join(INPUT_DIR, scene_dir)):
             if not camera_dir.startswith("c0"):
                 continue
-            feature_file = os.path.join(INPUT_DIR, scene_dir, camera_dir, "deep_features.txt")
+            feature_file = os.path.join(INPUT_DIR, scene_dir, camera_dir, f"deep_features_{cfg.REID.NAME}.txt")
             if os.path.exists(feature_file):
                 os.remove(feature_file)
 
@@ -81,7 +81,7 @@ def _inference(model, data_loader):
                 scene_dir = re.search(r"S([0-9]){2}", p).group(0)
                 camera_dir = re.search(r"c([0-9]){3}", p).group(0)
                 path = os.path.join(INPUT_DIR, scene_dir, camera_dir)
-                with open(os.path.join(path, 'deep_features.txt'), 'a+') as f:
+                with open(os.path.join(path, f'deep_features_{cfg.REID.NAME}.txt'), 'a+') as f:
                     line = p.split('/')[-1]+ ' '
                     print(line)
                     feature = list(feat[i].cpu().numpy())

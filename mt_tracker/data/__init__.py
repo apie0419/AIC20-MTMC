@@ -9,7 +9,6 @@ def make_train_loader(cfg):
     trainset = FeatureDataset(dataset.trainset, cfg, "train")
     train_loader = DataLoader(trainset, batch_size=cfg.SOLVER.IMS_PER_BATCH, shuffle=True, num_workers=num_workers, collate_fn=collate_fn)
     
-    
     return train_loader
 
 def make_val_loader(cfg):

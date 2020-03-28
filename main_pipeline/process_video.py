@@ -8,6 +8,7 @@ BASE_PATH = cfg.PATH.ROOT_PATH
 RESULT_PATH = os.path.join(BASE_PATH, "AIC20_res")
 dirname = "train"
 
+
 frame_dict = dict()
 colors = dict()
 
@@ -24,29 +25,24 @@ def read_result_file(filename):
                 res[frameid].append(data[1:6])
     return res
 
-def write_video(videodir, framelist ,fps, resolution):
-    filename = os.path.join(videodir, "output.avi")
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(filename, fourcc, fps, resolution)
-    for frame in framelist:
-        out.write(frame)
-    out.release()
-
 def main():
     scene_paths = os.listdir(os.path.join(BASE_PATH, dirname))
+    
     for s in scene_paths:
-        if not s.startswith("S01"):
+        if not s.startswith("S0"):
             continue
         video_paths = os.listdir(os.path.join(BASE_PATH, dirname, s))
         for p in video_paths:
             if not p.startswith("c0"):
                 continue
             videodir = os.path.join(BASE_PATH, dirname, s, p)
+            
             print ("Processing " + videodir + "...")
             cap = cv2.VideoCapture(os.path.join(videodir, "vdo.avi"))
             resolution = (int(cap.get(4)), int(cap.get(3)))
             
             fps = cap.get(cv2.CAP_PROP_FPS)
+
             framelist = list()
             result_dict = read_result_file(p + "_train.txt")
             framenum = int(cap.get(7))
@@ -74,11 +70,8 @@ def main():
                 
                 frame = cv2.resize(frame, (int(width), int(height)))
                 out.write(frame)
-                # framelist.append(frame)
-                # cv2.imwrite("test.jpg", frame)
             out.release()
             cap.release()
-            # write_video(videodir, framelist, fps, resolution)
 
 if __name__ == "__main__":
     main()

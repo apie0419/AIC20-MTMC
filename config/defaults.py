@@ -15,6 +15,7 @@ _C.PATH.INPUT_PATH = '<path_to_input_path>' # train or test
 # For Reid Initialization
 _C.REID.RESNET_PRETRAIN_MODEL_PATH = "<path_to_resnet_pretrain_model>" # resnet50-19c8e357.pth
 _C.REID.MODEL_PATH = "<path_to_reid_model>"
+_C.REID.NAME = "<dataset name>"
 _C.REID.LAST_STRIDE = 1
 
 # For Reid Image Transform

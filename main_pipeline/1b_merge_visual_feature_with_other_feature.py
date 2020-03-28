@@ -11,7 +11,6 @@ from config import cfg
 
 input_dir = cfg.PATH.INPUT_PATH
 
-
 def load_ft_file(feature_file):
     # load ft file
     img2deepft_dict = {}
@@ -61,7 +60,7 @@ def main():
         for camera_dir in camera_dirs:
             print(camera_dir)
             other_ft_file = os.path.join(camera_dir, 'det_gps_feature.txt')
-            deep_ft_file = os.path.join(camera_dir, 'deep_features.txt')
+            deep_ft_file = os.path.join(camera_dir, f'deep_features_{cfg.REID.NAME}.txt')
             out_path = os.path.join(camera_dir, 'det_reid_features.txt')
             img2gpsft_dict = load_gps_ft_file(other_ft_file)
 

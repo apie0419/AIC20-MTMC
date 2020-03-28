@@ -23,8 +23,9 @@ with open(os.path.join(cfg.PATH.ROOT_PATH, "track3.txt"), "r") as f:
         
             
 for camera, data in res.items():
+    print (camera)
     # print (data)
-    with open(os.path.join(output_path, "c" + camera.zfill(3) + "_train.txt"), "w") as f:
+    with open(os.path.join(output_path, "c" + camera.zfill(3) + "_test.txt"), "w") as f:
         data.sort(key=lambda x:int(x[0]))
         for d in data:
             f.write(",".join(d))

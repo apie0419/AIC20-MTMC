@@ -1,4 +1,4 @@
-import os, random, torch
+import os, random
 import numpy as np
 
 
@@ -12,9 +12,10 @@ class mtmc(object):
         self.trainset = self.process_data(self.train_dir)
         self.valset   = self.process_data(self.val_dir)
 
-    def loadfeature(self, file_list):
+    def loadfeature(self, file_list, fps_dict):
         feature_dict = dict()
-
+        
+        ts_dict = self.get_timestamp_dict()
         for fn in file_list:
             print (f"Load {fn}...")
             with open(fn, "r") as f:
@@ -23,19 +24,50 @@ class mtmc(object):
                     line = lines[i]
                     split_line = line.strip("\n").split(",")
                     camid = fn.split("/")[-2]
+                    ts_per_frame = 1/fps_dict[camid]
+                    ts = float(split_line[1]) * ts_per_frame
+                    gps = (float(split_line[3]), float(split_line[4]))
+                    feature = [float(ft) for ft in split_line[5:]]
                     _id = int(split_line[2])
                     if _id not in feature_dict:
                         feature_dict[_id] = dict()
-                        feature_dict[_id][camid] = [i]
+                        feature_dict[_id][camid] = [[np.array(feature), gps, ts]]
                     else:
                         if camid not in feature_dict[_id]:
-                            feature_dict[_id][camid] = [i]
+                            feature_dict[_id][camid] = [[np.array(feature), gps, ts]]
                         else:
-                            feature_dict[_id][camid].append(i)
+                            feature_dict[_id][camid].append([np.array(feature), gps, ts])
+                            
         return feature_dict
+
+    def get_timestamp_dict(self):
+        ts_dict = dict()
+        for filename in os.listdir(os.path.join(self.root, "cam_timestamp")):
+            with open(os.path.join(self.root, "cam_timestamp", filename), "r") as f:
+                lines = f.readlines()
+                temp = dict()
+                for line in lines:
+                    split_line = line.strip("\n").split(" ")
+                    temp[split_line[0]] = float(split_line[1])
+                _max = np.array(list(temp.values())).max()
+                for camid, ts in temp.items():
+                    ts_dict[camid] = ts * -1 + _max
+
+        return ts_dict
+
+    def get_fps_dict(self, dirname):
+        fps_dict = dict()
+        with open(os.path.join(self.root, dirname, "fps_file.txt"), "r") as f:
+            lines = f.readlines()
+            for line in lines:
+                split_line = line.strip("\n").split(" ")
+                fps_dict[split_line[0]] = float(split_line[1])
+        return fps_dict
 
     def process_data(self, data_dir):
         scene_dirs, dataset = list(), list()
+        fps_dict = self.get_fps_dict(data_dir)
+
         for dirname in os.listdir(data_dir):
             if dirname.startswith("S0"):
                 scene_dirs.append(dirname)
@@ -49,8 +81,12 @@ class mtmc(object):
             for camera_dir in camera_dirs:
                 filename = os.path.join(scene_path, camera_dir, "tracker_train_file.txt")
                 file_list.append(filename)
-            feature_dict = self.loadfeature(file_list)
+            
+            feature_dict = self.loadfeature(file_list, fps_dict)
             ids = list(feature_dict.keys())
+            # track = np.array(feature_dict[242]["c011"])
+            # print (np.average(track[:, 0], axis=0))
+            # exit()
             for i in ids:
                 print (f"Producing id={i} Data")
                 camids = list(feature_dict[i].keys())
@@ -58,17 +94,26 @@ class mtmc(object):
                 # Positive Data
                 for j in range(len(camids)):
                     camj = camids[j]
-                    features1 = feature_dict[i][camj]
+                    track1 = np.array(feature_dict[i][camj])
+                    avg_feature1 = np.average(track1[:, 0], axis=0)
+                    gps1 = track1[:, 1]
+                    ts1 = track1[:, 2]
                     num = 0
                     for k in range(j + 1, len(camids)):
                         camk = camids[k]
                         if j != k:
-                            features2 = feature_dict[i][camk]
-                            for f1 in features1:
-                                for f2 in features2:
-                                    _input = [scene_dir, camj, f1, camk, f2, 1]
-                                    dataset.append(_input)
-                                    num += 1
+                            track2 = np.array(feature_dict[i][camk])
+                            avg_feature2 = np.average(track2[:, 0], axis=0)
+                            gps2 = track2[:, 1]
+                            ts2 = track2[:, 2]
+                            dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
+                            dis_gps_2 = (gps1[int(len(gps1)/2)][0] - gps2[int(len(gps2)/2)][0]) ** 2 + (gps1[int(len(gps1)/2)][1] - gps2[int(len(gps2)/2)][1]) ** 2
+                            dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
+                            dis_ts_1 = abs(ts1[0] - ts2[0])
+                            dis_ts_2 = abs(ts1[-1] - ts2[-1])
+                            _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 1]
+                            dataset.append(_input)
+                            num += 1
                 
                     # Negtive Data
                     for _ in range(num):
@@ -81,9 +126,20 @@ class mtmc(object):
                             neg_camid = random.choice(list(feature_dict[_id].keys()))
                             if neg_camid != j:
                                 break
-                        neg_feature  = random.choice(feature_dict[_id][neg_camid])
-                        feature = random.choice(features1)
-                        _input = [scene_dir, camj, feature, neg_camid, neg_feature, 0]
+                        track2  = np.array(feature_dict[_id][neg_camid])
+                        avg_feature2 = np.average(track2[:, 0], axis=0)
+                        gps2 = track2[:, 1]
+                        ts2 = track2[:, 2]
+                        dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
+                        dis_gps_2 = (gps1[int(len(gps1)/2)][0] - gps2[int(len(gps2)/2)][0]) ** 2 + (gps1[int(len(gps1)/2)][1] - gps2[int(len(gps2)/2)][1]) ** 2
+                        dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
+                        dis_ts_1 = abs(ts1[0] - ts2[0])
+                        dis_ts_2 = abs(ts1[-1] - ts2[-1])
+                        _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 0]
                         dataset.append(_input)
 
         return dataset
+
+if __name__ == "__main__":
+    dataset = mtmc()
+    print (len(dataset.trainset), len(dataset.valset))

@@ -1,12 +1,13 @@
 PATH:
   ROOT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
-  INPUT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3/train"
+  INPUT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3/validation"
 
 DEVICE:
   TYPE: "cuda" 
   GPU: 1
 
 REID:
+  NAME: "t2t3"
   RESNET_PRETRAIN_MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50-19c8e357.pth"
   MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/resnet50_model_t2t3.pth"
   PIXEL_MEAN: [0.485, 0.456, 0.406]

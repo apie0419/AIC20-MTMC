@@ -4,7 +4,7 @@ PATH:
 MODEL:
   NAME: "mtmc"
   DEVICE: "cuda"
-  CUDA: 1
+  CUDA: 2
   HIDDEN_DIM: 4096
   OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-2"
   TEST_MODEL: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3.pth"
