@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from config import cfg
-from data import make_train_loader, make_val_loader
+from data import make_data_loader
 from modeling import build_model
 from ignite.engine import Engine, Events
 from ignite.handlers import Timer
@@ -57,7 +57,7 @@ def main():
     
     torch.backends.cudnn.benchmark = True
 
-    val_loader = make_val_loader(cfg)
+    train_loader, val_loader = make_data_loader(cfg)
 
     model = build_model(cfg)
     weight = torch.load(cfg.MODEL.TEST_MODEL)

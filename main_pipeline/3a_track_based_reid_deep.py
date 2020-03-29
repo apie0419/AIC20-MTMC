@@ -1,6 +1,6 @@
 
 import numpy as np
-import os, math, operator, sys, torch
+import os, math, operator, sys, torch, time
 
 sys.path.append("..")
 
@@ -10,6 +10,7 @@ from model import build_mtmc_model
 MATCHED = True
 NO_MATCHED = False
 input_dir = cfg.PATH.INPUT_PATH
+root_dir = cfg.PATH.ROOT_PATH
 
 INNER_SIMILAR_TH = 10
 MOVE_TH = 4  # todo 待修订
@@ -144,6 +145,31 @@ class Track(object):
         return [self.sequence[0].time, self.sequence[-1].time]
 
 
+
+def get_timestamp_dict():
+    ts_dict = dict()
+    for filename in os.listdir(os.path.join(root_dir, "cam_timestamp")):
+        with open(os.path.join(root_dir, "cam_timestamp", filename), "r") as f:
+            lines = f.readlines()
+            temp = dict()
+            for line in lines:
+                split_line = line.strip("\n").split(" ")
+                temp[split_line[0]] = float(split_line[1])
+            _max = np.array(list(temp.values())).max()
+            for camid, ts in temp.items():
+                ts_dict[camid] = ts * -1 + _max
+
+    return ts_dict
+
+def get_fps_dict():
+    fps_dict = dict()
+    with open(os.path.join(input_dir, "fps_file.txt"), "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            split_line = line.strip("\n").split(" ")
+            fps_dict[split_line[0]] = float(split_line[1])
+    return fps_dict
+
 def analysis_to_track_dict(file_path):
     camera = file_path.split('/')[-2]
     track_dict = {}
@@ -177,12 +203,18 @@ def normalize(x, _min, _max):
 
 def match_track(model, q_tracks, g_tracks):
     ranks = list()
+    ts_dict = get_timestamp_dict()
+    fps_dict = get_fps_dict()
     for qt in q_tracks:
-        print (qt.id)
         rank = list()
         qt_seq = qt.sequence
+        qt_ts = ts_dict[qt.cams]
+        qt_ts_per_frame = 1/fps_dict[qt.cams]
+
         for gt in g_tracks:
             gt_seq = gt.sequence
+            gt_ts = ts_dict[gt.cams]
+            gt_ts_per_frame = 1/fps_dict[gt.cams]
             with torch.no_grad():
                 model.eval()
                 model.to(cfg.DEVICE.TYPE)
@@ -192,8 +224,9 @@ def match_track(model, q_tracks, g_tracks):
                 dis_gps_1 = (gt_seq[0].gps_coor[0] - qt_seq[0].gps_coor[0]) ** 2 + (gt_seq[0].gps_coor[1] - qt_seq[0].gps_coor[1]) ** 2
                 dis_gps_2 = (gt_seq[int(len(gt_seq)/2)].gps_coor[0] - qt_seq[int(len(qt_seq)/2)].gps_coor[0]) ** 2 + (gt_seq[int(len(gt_seq)/2)].gps_coor[1] - qt_seq[int(len(qt_seq)/2)].gps_coor[1]) ** 2
                 dis_gps_3 = (gt_seq[-1].gps_coor[0] - qt_seq[-1].gps_coor[0]) ** 2 + (gt_seq[-1].gps_coor[1] - qt_seq[-1].gps_coor[1]) ** 2
-                dis_ts_1 = abs(gt_seq[0].time - qt_seq[0].time)
-                dis_ts_2 = abs(gt_seq[-1].time - qt_seq[-1].time)
+                
+                dis_ts_1 = abs(gt_seq[0].frame_index * gt_ts_per_frame + gt_ts - qt_seq[0].frame_index * qt_ts_per_frame + qt_ts)
+                dis_ts_2 = abs(gt_seq[-1].frame_index * gt_ts_per_frame + gt_ts - qt_seq[-1].frame_index * qt_ts_per_frame + qt_ts)
                 dis_gps_1 = normalize(dis_gps_1, gps_min[0], gps_max[0])
                 dis_gps_2 = normalize(dis_gps_2, gps_min[1], gps_max[1])
                 dis_gps_3 = normalize(dis_gps_3, gps_min[2], gps_max[2])
@@ -244,8 +277,7 @@ def main():
     scene_fds = os.listdir(input_dir)
     result_file = os.path.join(cfg.PATH.ROOT_PATH, 'submission')
     if os.path.exists(result_file):
-        os.remove(result_file
-        )
+        os.remove(result_file)
     for scene_fd in scene_fds:
         if scene_fd.startswith("S0"):
             scene_dirs.append(os.path.join(input_dir, scene_fd))
@@ -280,8 +312,15 @@ def main():
             q_camid = cams[i]
             q_tracks = all_track[q_camid]
             g_tracks = list()
+            exists = list()
+            print (f"Query Track: {q_camid}")
+            print (f"Gallery Tracks: {cams[:i]}")
             for g_camid in cams[:i]:
-                g_tracks += all_track[g_camid]
+                for tk in all_track[g_camid]:
+                    if tk.id not in exists:
+                        g_tracks.append(tk)
+                        exists.append(tk.id)
+                # g_tracks += all_track[g_camid]
             match_track(model, q_tracks, g_tracks)
         
         with open(result_file, 'a+') as f:

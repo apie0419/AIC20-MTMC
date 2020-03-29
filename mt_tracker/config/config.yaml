@@ -7,7 +7,7 @@ MODEL:
   CUDA: 2
   HIDDEN_DIM: 4101
   OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3"
-  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3.pth"
+  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3/mtmc_model_5.pth"
 
 DATASETS:
   NAME: 'mtmc'
