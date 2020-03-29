@@ -167,22 +167,42 @@ def analysis_to_track_dict(file_path):
         if id not in track_dict:
             track_dict[id] = Track(id, [], camera)
         track_dict[id].append(cur_box)
-        track_dict[id].gps_move_vec = track_dict[id].get_moving_vector()  # 第一次初始化的是box加入的方式，需要手动设置移动方向，后面每次update的时候会更新移动方向到最新的
-        cmpfun = operator.attrgetter('time')  # 参数为排序依据的属性，可以有多个，这里优先id，使用时按需求改换参数即可
+        track_dict[id].gps_move_vec = track_dict[id].get_moving_vector() 
+        cmpfun = operator.attrgetter('time') 
         track_dict[id].sequence.sort(key=cmpfun)
     return track_dict
+
+def normalize(x, _min, _max):
+    return (x - _min) / (_max - _min)
 
 def match_track(model, q_tracks, g_tracks):
     ranks = list()
     for qt in q_tracks:
+        print (qt.id)
         rank = list()
+        qt_seq = qt.sequence
         for gt in g_tracks:
+            gt_seq = gt.sequence
             with torch.no_grad():
                 model.eval()
                 model.to(cfg.DEVICE.TYPE)
-
+                
                 m = torch.nn.Softmax(dim=1)
-                feature = torch.FloatTensor(qt.average_feature.tolist() + gt.average_feature.tolist()).view(1, cfg.MTMC.HIDDEN_DIM).cuda()
+                gps_min, gps_max, ts_min, ts_max = cfg.MTMC.GPS_MIN, cfg.MTMC.GPS_MAX, cfg.MTMC.TS_MIN, cfg.MTMC.TS_MAX
+                dis_gps_1 = (gt_seq[0].gps_coor[0] - qt_seq[0].gps_coor[0]) ** 2 + (gt_seq[0].gps_coor[1] - qt_seq[0].gps_coor[1]) ** 2
+                dis_gps_2 = (gt_seq[int(len(gt_seq)/2)].gps_coor[0] - qt_seq[int(len(qt_seq)/2)].gps_coor[0]) ** 2 + (gt_seq[int(len(gt_seq)/2)].gps_coor[1] - qt_seq[int(len(qt_seq)/2)].gps_coor[1]) ** 2
+                dis_gps_3 = (gt_seq[-1].gps_coor[0] - qt_seq[-1].gps_coor[0]) ** 2 + (gt_seq[-1].gps_coor[1] - qt_seq[-1].gps_coor[1]) ** 2
+                dis_ts_1 = abs(gt_seq[0].time - qt_seq[0].time)
+                dis_ts_2 = abs(gt_seq[-1].time - qt_seq[-1].time)
+                dis_gps_1 = normalize(dis_gps_1, gps_min[0], gps_max[0])
+                dis_gps_2 = normalize(dis_gps_2, gps_min[1], gps_max[1])
+                dis_gps_3 = normalize(dis_gps_3, gps_min[2], gps_max[2])
+                dis_ts_1 = normalize(dis_ts_1, ts_min[0], ts_max[0])
+                dis_ts_2 = normalize(dis_ts_2, ts_min[1], ts_max[1])
+                _input = qt.average_feature.tolist() + gt.average_feature.tolist()
+                _input += [dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2]
+
+                feature = torch.FloatTensor(_input).view(1, cfg.MTMC.HIDDEN_DIM).cuda()
                 prob = m(model(feature))[0][1]
                 rank.append([gt.id, prob])
                 

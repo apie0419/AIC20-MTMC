@@ -1,6 +1,6 @@
 PATH:
   ROOT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3"
-  INPUT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3/validation"
+  INPUT_PATH: "/home/apie/projects/AIC20-MTMC/dataset/AIC20_T3/test"
 
 DEVICE:
   TYPE: "cuda" 
@@ -16,5 +16,9 @@ REID:
   LAST_STRIDE: 1
 
 MTMC:
-  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3.pth"
-  HIDDEN_DIM: 4096
+  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3_2.pth"
+  HIDDEN_DIM: 4101
+  TS_MIN: [0.000, 0.000]
+  TS_MAX: [208.0, 205.0]
+  GPS_MIN: [0.000, 0.000, 0.000]
+  GPS_MAX: [0.000905503, 0.000890009, 0.016692804]

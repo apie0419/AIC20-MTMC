@@ -14,7 +14,7 @@ class mtmc(object):
 
     def loadfeature(self, file_list, fps_dict):
         feature_dict = dict()
-        
+          
         ts_dict = self.get_timestamp_dict()
         for fn in file_list:
             print (f"Load {fn}...")
@@ -143,11 +143,11 @@ class mtmc(object):
 if __name__ == "__main__":
     dataset = mtmc()
     trainset = np.array(dataset.trainset)
-    print (trainset[:, 2].mean(), trainset[:, 2].std())
-    print (trainset[:, 3].mean(), trainset[:, 3].std())
-    print (trainset[:, 4].mean(), trainset[:, 4].std())
-    print (trainset[:, 5].mean(), trainset[:, 5].std())
-    print (trainset[:, 6].mean(), trainset[:, 6].std())
+    print (trainset[:, 2].max(), trainset[:, 2].min())
+    print (trainset[:, 3].max(), trainset[:, 3].min())
+    print (trainset[:, 4].max(), trainset[:, 4].min())
+    print (trainset[:, 5].max(), trainset[:, 5].min())
+    print (trainset[:, 6].max(), trainset[:, 6].min())
     """
     5.636946243413381e-05 0.00013657720170511732
     5.611853823862016e-05 0.0001372030191373347
