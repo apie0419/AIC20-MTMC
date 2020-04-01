@@ -9,7 +9,7 @@ def make_loss(cfg):
         focal = focal.cuda()
     
     def loss_func(dist, target):
-        # return F.cross_entropy(dist, assign)
+        # return F.cross_entropy(dist, target)
         return focal(dist, target)
         
     return loss_func

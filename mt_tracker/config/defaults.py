@@ -18,7 +18,8 @@ _C.MODEL.CUDA = 1 # gpu number
 _C.MODEL.DEVICE = "<cuda or cpu>"
 _C.MODEL.OUTPUT_DIR = "<save train weight path>"
 _C.MODEL.NAME = "<model name>"
-_C.MODEL.HIDDEN_DIM = 128 # hidden layer size
+_C.MODEL.APPEARANCE_DIM = 128 # appearance featrue size
+_C.MODEL.PHYSIC_DIM = 128 # physic feature size
 _C.MODEL.TEST_MODEL = "<test model path>"
 
 
@@ -54,10 +55,6 @@ _C.SOLVER.CHECKPOINT_PERIOD = 50
 _C.SOLVER.LOG_PERIOD = 100
 _C.SOLVER.EVAL_PERIOD = 50
 
-_C.INPUT.TS_STD = [38.03783, 38.19534]
-_C.INPUT.TS_MEAN = [27.26076, 25.96027]
-_C.INPUT.GPS_STD = [0.00013765, 0.00013720, 0.00057203]
-_C.INPUT.GPS_MEAN = [0.000005636, 0.000005611, 0.000002973]
 _C.INPUT.TS_MIN = [0.000, 0.000]
 _C.INPUT.TS_MAX = [208.0, 205.0]
 _C.INPUT.GPS_MIN = [0.000, 0.000, 0.000]

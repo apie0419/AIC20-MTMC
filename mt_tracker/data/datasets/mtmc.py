@@ -1,5 +1,6 @@
 import os, random
 import numpy as np
+from scipy.spatial import distance
 
 
 class mtmc(object):
@@ -85,7 +86,7 @@ class mtmc(object):
                 dis_ts2 = float(line[-2])
                 label = int(line[-1])
                 dataset.append([avg_ft1, avg_ft2, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, label])
-
+        
         return dataset
 
     def process_data(self, data_dir):
@@ -136,7 +137,7 @@ class mtmc(object):
                             dis_ts_2 = abs(ts1[-1] - ts2[-1])
                             _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 1]
                             dataset.append(_input)
-                            with open(os.path.join(data_dir, "data.txt"), "a") as f:
+                            with open(os.path.join(data_dir, "data.txt"), "a+") as f:
                                 avg_ft1 = [str(ft) for ft in avg_feature1]
                                 avg_ft2 = [str(ft) for ft in avg_feature2]
                                 f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",1\n")
@@ -165,11 +166,10 @@ class mtmc(object):
                         dis_ts_2 = abs(ts1[-1] - ts2[-1])
                         _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 0]
                         dataset.append(_input)
-                        with open(os.path.join(data_dir, "data.txt"), "a") as f:
+                        with open(os.path.join(data_dir, "data.txt"), "a+") as f:
                             avg_ft1 = [str(ft) for ft in avg_feature1]
                             avg_ft2 = [str(ft) for ft in avg_feature2]
                             f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",0\n")
-
         return dataset
 
 

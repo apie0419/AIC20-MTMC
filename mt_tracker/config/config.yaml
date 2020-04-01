@@ -5,9 +5,10 @@ MODEL:
   NAME: "mtmc"
   DEVICE: "cuda"
   CUDA: 2
-  HIDDEN_DIM: 4101
+  APPEARANCE_DIM: 4096
+  PHYSIC_DIM: 5
   OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3"
-  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3/mtmc_model_5.pth"
+  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3/model_mtmc_150.pth"
 
 DATASETS:
   NAME: 'mtmc'
@@ -17,10 +18,10 @@ DATALOADER:
   NUM_WORKERS: 2
 
 INPUT:
-  TS_STD: [38.03783, 38.19534]
-  TS_MEAN: [27.26076, 25.96027]
-  GPS_STD: [0.00013765, 0.00013720, 0.00057203]
-  GPS_MEAN: [0.000005636, 0.000005611, 0.000002973]
+  TS_MIN: [0.000, 0.000]
+  TS_MAX: [208.0, 205.0]
+  GPS_MIN: [0.000, 0.000, 0.000]
+  GPS_MAX: [0.000905503, 0.000890009, 0.016692804]
 
 SOLVER:
   OPTIMIZER_NAME: 'Adam'

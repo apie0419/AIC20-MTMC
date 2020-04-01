@@ -5,10 +5,6 @@ class FeatureDataset(Dataset):
 
     def __init__(self, dataset, cfg):
         self.dataset = dataset
-        self.gps_mean = cfg.INPUT.GPS_MEAN
-        self.gps_std = cfg.INPUT.GPS_STD
-        self.ts_mean = cfg.INPUT.TS_MEAN
-        self.ts_std = cfg.INPUT.TS_STD
         self.gps_min = cfg.INPUT.GPS_MIN
         self.gps_max = cfg.INPUT.GPS_MAX
         self.ts_min = cfg.INPUT.TS_MIN
@@ -25,17 +21,11 @@ class FeatureDataset(Dataset):
 
     def __getitem__(self, index):
         avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, target = self.dataset[index]
-        # dis_gps_1 = self.standarize(dis_gps_1, self.gps_mean[0], self.gps_std[0])
-        # dis_gps_2 = self.standarize(dis_gps_2, self.gps_mean[1], self.gps_std[1])
-        # dis_gps_3 = self.standarize(dis_gps_3, self.gps_mean[2], self.gps_std[2])
-        # dis_ts_1 = self.standarize(dis_ts_1, self.ts_mean[0], self.ts_std[0])
-        # dis_ts_2 = self.standarize(dis_ts_2, self.ts_mean[1], self.ts_std[1])
         dis_gps_1 = self.normalize(dis_gps_1, self.gps_min[0], self.gps_max[0])
         dis_gps_2 = self.normalize(dis_gps_2, self.gps_min[1], self.gps_max[1])
         dis_gps_3 = self.normalize(dis_gps_3, self.gps_min[2], self.gps_max[2])
         dis_ts_1 = self.normalize(dis_ts_1, self.ts_min[0], self.ts_max[0])
         dis_ts_2 = self.normalize(dis_ts_2, self.ts_min[1], self.ts_max[1])
-        dis_gps = [dis_gps_1, dis_gps_2, dis_gps_3]
-        dis_ts = [dis_ts_1, dis_ts_2]
+        physic_feature = [dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2]
         
-        return avg_feature1, avg_feature2, dis_gps, dis_ts, target
+        return avg_feature1, avg_feature2, physic_feature, target

@@ -16,7 +16,7 @@ def build_reid_model(cfg):
 def build_mtmc_model(cfg):
     WEIGHT = cfg.MTMC.MODEL_PATH
     weight = torch.load(WEIGHT)
-    model = MCT(cfg.MTMC.HIDDEN_DIM)
+    model = MCT(cfg.MTMC.APPEARANCE_DIM, cfg.MTMC.PHYSIC_DIM)
     model.load_state_dict(weight)
     return model
 
