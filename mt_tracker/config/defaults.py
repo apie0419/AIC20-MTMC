@@ -18,13 +18,9 @@ _C.MODEL.CUDA = 1 # gpu number
 _C.MODEL.DEVICE = "<cuda or cpu>"
 _C.MODEL.OUTPUT_DIR = "<save train weight path>"
 _C.MODEL.NAME = "<model name>"
-<<<<<<< HEAD
-_C.MODEL.HIDDEN_DIM = 7
 _C.MODEL.APPEARANCE_DIM = 128 # appearance featrue size
 _C.MODEL.PHYSIC_DIM = 128 # physic feature size
-=======
-_C.MODEL.HIDDEN_DIM = 128 # hidden layer size
->>>>>>> parent of 2349a86... add expected time limit
+
 _C.MODEL.TEST_MODEL = "<test model path>"
 
 

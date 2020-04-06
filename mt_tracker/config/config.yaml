@@ -5,15 +5,10 @@ MODEL:
   NAME: "mtmc"
   DEVICE: "cuda"
   CUDA: 2
-<<<<<<< HEAD
-  HIDDEN_DIM: 6
   APPEARANCE_DIM: 4096
   PHYSIC_DIM: 5
-=======
-  HIDDEN_DIM: 4101
->>>>>>> parent of 2349a86... add expected time limit
-  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3"
-  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-3/mtmc_model_5.pth"
+  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-4"
+  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-4/mtmc_model_150.pth"
 
 DATASETS:
   NAME: 'mtmc'

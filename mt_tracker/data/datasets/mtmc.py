@@ -76,17 +76,6 @@ class mtmc(object):
             lines = f.readlines()
             for line in lines:
                 line = line.strip("\n").split(",")
-<<<<<<< HEAD
-                cos_dis = float(line[0])
-                dis_gps1 = float(line[1])
-                dis_gps2 = float(line[2])
-                dis_gps3 = float(line[3])
-                dis_ts1 = float(line[4])
-                dis_ts2 = float(line[5])
-                label = int(line[6])
-                dataset.append([cos_dis, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, label])
-        
-=======
                 avg_ft1 = [float(ele) for ele in line[:2048]]
                 avg_ft2 = [float(ele) for ele in line[2048:4096]]
                 dis_gps1 = float(line[-6])
@@ -96,8 +85,7 @@ class mtmc(object):
                 dis_ts2 = float(line[-2])
                 label = int(line[-1])
                 dataset.append([avg_ft1, avg_ft2, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, label])
-
->>>>>>> parent of 2349a86... add expected time limit
+        
         return dataset
 
     def process_data(self, data_dir):
@@ -139,7 +127,6 @@ class mtmc(object):
                         if j != k:
                             track2 = np.array(feature_dict[i][camk])
                             avg_feature2 = np.average(track2[:, 0], axis=0)
-                            cos_dis = distance.cosine(avg_feature1, avg_feature2)
                             gps2 = track2[:, 1]
                             ts2 = track2[:, 2]
                             dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
@@ -147,15 +134,15 @@ class mtmc(object):
                             dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
                             dis_ts_1 = abs(ts1[0] - ts2[0])
                             dis_ts_2 = abs(ts1[-1] - ts2[-1])
-                            _input = [cos_dis, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 1]
+                            _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 1]
                             dataset.append(_input)
-                            with open(os.path.join(data_dir, "data.txt"), "a") as f:
+                            with open(os.path.join(data_dir, "data.txt"), "a+") as f:
                                 avg_ft1 = [str(ft) for ft in avg_feature1]
                                 avg_ft2 = [str(ft) for ft in avg_feature2]
-                                f.write(str(cos_dis) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",1\n")
+                                f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",1\n")
                             num += 1
 
-                    num = num + int(num*0.2)
+                    num = num + int(num*0.5)
                     # Negtive Data
                     for _ in range(num):
                         
@@ -176,18 +163,12 @@ class mtmc(object):
                         dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
                         dis_ts_1 = abs(ts1[0] - ts2[0])
                         dis_ts_2 = abs(ts1[-1] - ts2[-1])
-                        cos_dis = distance.cosine(avg_feature1, avg_feature2)
-                        _input = [cos_dis, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 0]
+                        _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 0]
                         dataset.append(_input)
-                        with open(os.path.join(data_dir, "data.txt"), "a") as f:
+                        with open(os.path.join(data_dir, "data.txt"), "a+") as f:
                             avg_ft1 = [str(ft) for ft in avg_feature1]
                             avg_ft2 = [str(ft) for ft in avg_feature2]
-<<<<<<< HEAD
-                            f.write(str(cos_dis) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",0\n")
-=======
                             f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",0\n")
-
->>>>>>> parent of 2349a86... add expected time limit
         return dataset
 
 

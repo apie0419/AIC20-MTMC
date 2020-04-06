@@ -30,13 +30,9 @@ _C.MTMC.TS_MIN = [0.000, 0.000]
 _C.MTMC.TS_MAX = [208.0, 205.0]
 _C.MTMC.GPS_MIN = [0.000, 0.000, 0.000]
 _C.MTMC.GPS_MAX = [0.000905503, 0.000890009, 0.016692804]
-<<<<<<< HEAD
+
 _C.MTMC.APPEARANCE_DIM = 4096
 _C.MTMC.PHYSIC_DIM = 6
-_C.MTMC.HIDDEN_DIM = 7
-=======
->>>>>>> parent of 2349a86... add expected time limit
-
 
 _C.DEVICE.GPU = 1 # gpu number
 _C.DEVICE.TYPE = "<cuda or cpu>"

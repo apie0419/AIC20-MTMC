@@ -76,11 +76,9 @@ def do_train(
     logger.info("Start Training")
     trainer = create_trainer(model, optimizer, loss_fn, device=device)
     evaluator = create_evaluator(model, device=device)
-    checkpointer = ModelCheckpoint(dirname=output_dir, filename_prefix=cfg.MODEL.NAME, n_saved=None, require_empty=False)
+    
     timer = Timer(average=True)
 
-    trainer.add_event_handler(Events.EPOCH_COMPLETED, checkpointer, {'model': model,
-                                                                     'optimizer': optimizer})
     timer.attach(trainer, start=Events.EPOCH_STARTED, resume=Events.ITERATION_STARTED,
                  pause=Events.ITERATION_COMPLETED, step=Events.ITERATION_COMPLETED)
 
@@ -117,6 +115,8 @@ def do_train(
             evaluator.run(val_loader)
             logger.info("Validation Results - Epoch: {}".format(engine.state.epoch))
             logger.info("Accuracy: {:.1%}".format(evaluator.state.metrics['eva_avg_acc']))
+        if engine.state.epoch % checkpoint_period == 0:
+            torch.save(model.state_dict(), os.path.join(output_dir, cfg.MODEL.NAME + "_model_" + str(engine.state.epoch) + ".pth"))
 
     trainer.run(train_loader, max_epochs=epochs)
 
