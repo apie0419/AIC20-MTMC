@@ -335,8 +335,16 @@ def analysis_time_stamp():
 
 
 def tk_time_fit(tk0, tk1):
+    # TTTHHH = 10
+    # near_th = 400
+    # far_th = 650
     near_th = 8
     far_th = 22
+    # near_th = 0
+    # far_th = 0
+    # near_th = 20
+    # mid_th = 75
+    # far_th = 150
     time = tk1.get_first().frame_index - tk0.get_last().frame_index
     if time < 5:
         return far_th
@@ -402,7 +410,7 @@ def main():
                 track_dict.pop(id)
 
             print("dict1: ", len(track_dict))
-            
+            # 记录在视频中间突然消失，和突然出现的track, 试图连接它们并删除连接后多余的track
             roi_src = cv2.imread(roi_path)
             roi = preprocess_roi(roi_src)
             halfway_list = []

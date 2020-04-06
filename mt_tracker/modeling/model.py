@@ -29,11 +29,30 @@ def weights_init_classifier(m):
 class MCT(nn.Module):
     def __init__(self, hidden_dim):
         super(MCT, self).__init__()
+<<<<<<< HEAD
         self.fc1 = nn.Linear(hidden_dim, 4)
         self.bn1 = nn.BatchNorm1d(4)
         self.fc2 = nn.Linear(4, 3)
         self.bn2 = nn.BatchNorm1d(3)
         self.fc3 = nn.Linear(3, 2)
+=======
+        self.fc1 = nn.Linear(4096, 2048)
+        self.bn1 = nn.BatchNorm1d(2048)
+        self.fc11 = nn.Linear(5, 5)
+        self.bn11 = nn.BatchNorm1d(5)
+        self.fc22 = nn.Linear(5, 2)
+        self.bn22 = nn.BatchNorm1d(2)
+        self.fc2 = nn.Linear(2048, 1024)
+        self.bn2 = nn.BatchNorm1d(1024)
+        self.fc3 = nn.Linear(1024, 256)
+        self.bn3 = nn.BatchNorm1d(256)
+        self.fc4 = nn.Linear(256, 64)
+        self.bn4 = nn.BatchNorm1d(64)
+        self.fc5 = nn.Linear(64, 2)
+        self.bn5 = nn.BatchNorm1d(2)
+        self.fc6 = nn.Linear(4, 2)
+>>>>>>> parent of 2349a86... add expected time limit
+
 
         self.fc1.apply(weights_init_kaiming)
         self.bn1.apply(weights_init_kaiming)
@@ -42,11 +61,21 @@ class MCT(nn.Module):
         self.fc3.apply(weights_init_kaiming)
 
     def forward(self, x):
+<<<<<<< HEAD
+=======
+        x, x_2 = x[:, :4096], x[:, 4096:]
+        
+>>>>>>> parent of 2349a86... add expected time limit
         x = self.fc1(x)
         x = F.relu(self.bn1(x))
+        x_2 = self.fc11(x_2)
+        x_2 = F.relu(self.bn11(x_2))
         x = self.fc2(x)
         x = F.relu(self.bn2(x))
+        x_2 = self.fc22(x_2)
+        x_2 = F.relu(self.bn22(x_2))
         x = self.fc3(x)
+<<<<<<< HEAD
         # x = F.relu(self.bn3(x))
         # x = self.fc4(x)
         # x = F.relu(self.bn4(x))
@@ -58,4 +87,13 @@ class MCT(nn.Module):
         # x_2 = F.relu(self.bn22(x_2))
        
         # x = self.fc6(torch.cat((x, x_2), 1))
+=======
+        x = F.relu(self.bn3(x))
+        x = self.fc4(x)
+        x = F.relu(self.bn4(x))
+        x = self.fc5(x)
+        x = F.relu(self.bn5(x))
+        x = self.fc6(torch.cat((x, x_2), 1))
+        # x = F.relu(x)
+>>>>>>> parent of 2349a86... add expected time limit
         return x

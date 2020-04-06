@@ -16,10 +16,15 @@ REID:
   LAST_STRIDE: 1
 
 MTMC:
+<<<<<<< HEAD
   MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/model_mtmc_150 copy.pth"
   APPEARANCE_DIM: 4096
   HIDDEN_DIM: 6
   PHYSIC_DIM: 5
+=======
+  MODEL_PATH: "/home/apie/projects/AIC20-MTMC/weights/mtmc_model_t2t3_5.pth"
+  HIDDEN_DIM: 4101
+>>>>>>> parent of 2349a86... add expected time limit
   TS_MIN: [0.000, 0.000]
   TS_MAX: [208.0, 205.0]
   GPS_MIN: [0.000, 0.000, 0.000]

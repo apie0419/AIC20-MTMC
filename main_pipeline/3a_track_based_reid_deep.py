@@ -1,7 +1,6 @@
 
 import numpy as np
-import os, math, operator, sys, torch, cv2
-from scipy.spatial import distance
+import os, math, operator, sys, torch, time
 
 sys.path.append("..")
 
@@ -124,6 +123,20 @@ class Track(object):
         print("For track-" + str(self.id) + ' : ', "length-" + str(len(self.sequence)))
         print(self.get_moving_distance())
 
+    def get_feature_list(self):
+        ft_list = []
+        for bx in self.sequence:
+            cur_ft = bx.feature
+            similar = False
+            for ft in ft_list:
+                dis = calu_feature_distance(ft, cur_ft)
+                if dis < INNER_SIMILAR_TH:
+                    similar = True
+                    break
+            if not similar:
+                ft_list.append(cur_ft)
+        return ft_list
+
     # 获取track的时间段
     def get_time_slot(self):
         # if self.sequence[-1].time < self.sequence[0].time:
@@ -131,30 +144,7 @@ class Track(object):
 
         return [self.sequence[0].time, self.sequence[-1].time]
 
-def analysis_transfrom_mat(cali_path):
-    first_line = open(cali_path).readlines()[0].strip('\r\n')
-    cols = first_line.lstrip('Homography matrix: ').split(';')
-    transfrom_mat = np.ones((3, 3))
-    for i in range(3):
-        values_string = cols[i].split()
-        for j in range(3):
-            value = float(values_string[j])
-            transfrom_mat[i][j] = value
-    inv_transfrom_mat = np.linalg.inv(transfrom_mat)
-    return inv_transfrom_mat
 
-def getdistance(pt1, pt2):
-    EARTH_RADIUS = 6378.137
-    lat1, lon1 = pt1[0], pt1[1]
-    lat2, lon2 = pt2[0], pt2[1]
-    radlat1 = lat1 * math.pi / 180
-    radlat2 = lat2 * math.pi / 180
-    lat_dis = radlat1 - radlat2
-    lon_dis = (lon1 * math.pi - lon2 * math.pi) / 180
-    distance = 2 * math.asin(math.sqrt((math.sin(lat_dis/2) ** 2) + math.cos(radlat1) * math.cos(radlat2) * (math.sin(lon_dis/2) ** 2)))
-    distance *= EARTH_RADIUS
-    distance = round(distance * 10000) / 10000
-    return distance
 
 def get_timestamp_dict():
     ts_dict = dict()
@@ -216,6 +206,7 @@ def match_track(model, q_tracks, g_tracks):
     ts_dict = get_timestamp_dict()
     fps_dict = get_fps_dict()
     for qt in q_tracks:
+<<<<<<< HEAD
         qt_seq = qt.sequence
         qt_ts = ts_dict[qt.cams]
         qt_ts_per_frame = 1/fps_dict[qt.cams]
@@ -228,30 +219,41 @@ def match_track(model, q_tracks, g_tracks):
         match = 0
         for gt in g_tracks:
             
+=======
+        rank = list()
+        qt_seq = qt.sequence
+        qt_ts = ts_dict[qt.cams]
+        qt_ts_per_frame = 1/fps_dict[qt.cams]
+
+        for gt in g_tracks:
+>>>>>>> parent of 2349a86... add expected time limit
             gt_seq = gt.sequence
             gt_ts = ts_dict[gt.cams]
             gt_ts_per_frame = 1/fps_dict[gt.cams]
-            
             with torch.no_grad():
                 model.eval()
                 model.to(cfg.DEVICE.TYPE)
                 
                 m = torch.nn.Softmax(dim=1)
                 gps_min, gps_max, ts_min, ts_max = cfg.MTMC.GPS_MIN, cfg.MTMC.GPS_MAX, cfg.MTMC.TS_MIN, cfg.MTMC.TS_MAX
+<<<<<<< HEAD
                 
                 vec1 = [gt_seq[int(len(gt_seq)/2)].gps_coor[0] - gt_seq[0].gps_coor[0], gt_seq[int(len(gt_seq)/2)].gps_coor[1] - gt_seq[0].gps_coor[1]]
                 vec2 = [gt_seq[-1].gps_coor[0] - gt_seq[0].gps_coor[0], gt_seq[-1].gps_coor[1] - gt_seq[0].gps_coor[1]]
                 direction = distance.cosine(vec1, vec2) * -1 + 1
                 
+=======
+>>>>>>> parent of 2349a86... add expected time limit
                 dis_gps_1 = (gt_seq[0].gps_coor[0] - qt_seq[0].gps_coor[0]) ** 2 + (gt_seq[0].gps_coor[1] - qt_seq[0].gps_coor[1]) ** 2
                 dis_gps_2 = (gt_seq[int(len(gt_seq)/2)].gps_coor[0] - qt_seq[int(len(qt_seq)/2)].gps_coor[0]) ** 2 + (gt_seq[int(len(gt_seq)/2)].gps_coor[1] - qt_seq[int(len(qt_seq)/2)].gps_coor[1]) ** 2
                 dis_gps_3 = (gt_seq[-1].gps_coor[0] - qt_seq[-1].gps_coor[0]) ** 2 + (gt_seq[-1].gps_coor[1] - qt_seq[-1].gps_coor[1]) ** 2
-                dis_ts_1 = abs((gt_seq[0].frame_index * gt_ts_per_frame + gt_ts) - (qt_seq[0].frame_index * qt_ts_per_frame + qt_ts))
-                dis_ts_2 = abs((gt_seq[-1].frame_index * gt_ts_per_frame + gt_ts) - (qt_seq[-1].frame_index * qt_ts_per_frame + qt_ts))
                 
+                dis_ts_1 = abs(gt_seq[0].frame_index * gt_ts_per_frame + gt_ts - qt_seq[0].frame_index * qt_ts_per_frame + qt_ts)
+                dis_ts_2 = abs(gt_seq[-1].frame_index * gt_ts_per_frame + gt_ts - qt_seq[-1].frame_index * qt_ts_per_frame + qt_ts)
                 dis_gps_1 = normalize(dis_gps_1, gps_min[0], gps_max[0])
                 dis_gps_2 = normalize(dis_gps_2, gps_min[1], gps_max[1])
                 dis_gps_3 = normalize(dis_gps_3, gps_min[2], gps_max[2])
+<<<<<<< HEAD
                 norm_dis_ts_1 = normalize(dis_ts_1, ts_min[0], ts_max[0])
                 norm_dis_ts_2 = normalize(dis_ts_2, ts_min[1], ts_max[1])
                 # _input = qt.average_feature.tolist() + gt.average_feature.tolist()
@@ -283,6 +285,49 @@ def match_track(model, q_tracks, g_tracks):
 
     print (f"Final Matched: {len(already_matched)}/{len(q_tracks)}")
     
+=======
+                dis_ts_1 = normalize(dis_ts_1, ts_min[0], ts_max[0])
+                dis_ts_2 = normalize(dis_ts_2, ts_min[1], ts_max[1])
+                _input = qt.average_feature.tolist() + gt.average_feature.tolist()
+                _input += [dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2]
+
+                feature = torch.FloatTensor(_input).view(1, cfg.MTMC.HIDDEN_DIM).cuda()
+                prob = m(model(feature))[0][1]
+                rank.append([gt.id, prob])
+                
+        rank = sorted(rank, key=lambda x: x[1], reverse=True)
+        ranks.append([qt, rank])
+
+    already_matched = list()
+    num_tracks = len(g_tracks)
+    for i in range(num_tracks):
+        match = dict()
+        for j in range(len(ranks)):
+            rank = ranks[j]
+            if rank == None:
+                continue
+            match_id = rank[1][i][0]
+            if match_id in already_matched:
+                continue
+            prob = rank[1][i][1]
+            if prob < 0.5:
+                continue
+            if match_id not in match:
+                match[match_id] = [[j, prob]]
+            else:
+                match[match_id].append([j, prob])
+
+        for match_id in match:
+
+            match_rank = sorted(match[match_id], key=lambda x: x[1], reverse=True)
+            idx = match_rank[0][0]
+            qt = ranks[idx][0]
+            qt.id = match_id
+            already_matched.append(match_id)
+            ranks[idx] = None
+
+
+>>>>>>> parent of 2349a86... add expected time limit
 def main():
 
     scene_dirs = []
@@ -323,12 +368,16 @@ def main():
         for i in range(1, len(cams)):
             q_camid = cams[i]
             q_tracks = all_track[q_camid]
-            g_tracks, exists = list(), list()
+            g_tracks = list()
+            exists = list()
             print (f"Query Track: {q_camid}")
             print (f"Gallery Tracks: {cams[:i]}")
             for g_camid in cams[:i]:
-                g_tracks += all_track[g_camid]
-
+                for tk in all_track[g_camid]:
+                    if tk.id not in exists:
+                        g_tracks.append(tk)
+                        exists.append(tk.id)
+                # g_tracks += all_track[g_camid]
             match_track(model, q_tracks, g_tracks)
         
         with open(result_file, 'a+') as f:

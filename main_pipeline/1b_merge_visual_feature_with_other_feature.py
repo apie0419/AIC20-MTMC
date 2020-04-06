@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# author: peilun
+# 特征融合
+# 15
 import numpy as np
 import os, sys
 

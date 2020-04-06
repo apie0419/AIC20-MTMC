@@ -1,6 +1,5 @@
 import os, random
 import numpy as np
-from scipy.spatial import distance
 
 
 class mtmc(object):
@@ -77,6 +76,7 @@ class mtmc(object):
             lines = f.readlines()
             for line in lines:
                 line = line.strip("\n").split(",")
+<<<<<<< HEAD
                 cos_dis = float(line[0])
                 dis_gps1 = float(line[1])
                 dis_gps2 = float(line[2])
@@ -86,6 +86,18 @@ class mtmc(object):
                 label = int(line[6])
                 dataset.append([cos_dis, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, label])
         
+=======
+                avg_ft1 = [float(ele) for ele in line[:2048]]
+                avg_ft2 = [float(ele) for ele in line[2048:4096]]
+                dis_gps1 = float(line[-6])
+                dis_gps2 = float(line[-5])
+                dis_gps3 = float(line[-4])
+                dis_ts1 = float(line[-3])
+                dis_ts2 = float(line[-2])
+                label = int(line[-1])
+                dataset.append([avg_ft1, avg_ft2, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, label])
+
+>>>>>>> parent of 2349a86... add expected time limit
         return dataset
 
     def process_data(self, data_dir):
@@ -137,7 +149,7 @@ class mtmc(object):
                             dis_ts_2 = abs(ts1[-1] - ts2[-1])
                             _input = [cos_dis, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 1]
                             dataset.append(_input)
-                            with open(os.path.join(data_dir, "data.txt"), "a+") as f:
+                            with open(os.path.join(data_dir, "data.txt"), "a") as f:
                                 avg_ft1 = [str(ft) for ft in avg_feature1]
                                 avg_ft2 = [str(ft) for ft in avg_feature2]
                                 f.write(str(cos_dis) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",1\n")
@@ -167,10 +179,15 @@ class mtmc(object):
                         cos_dis = distance.cosine(avg_feature1, avg_feature2)
                         _input = [cos_dis, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 0]
                         dataset.append(_input)
-                        with open(os.path.join(data_dir, "data.txt"), "a+") as f:
+                        with open(os.path.join(data_dir, "data.txt"), "a") as f:
                             avg_ft1 = [str(ft) for ft in avg_feature1]
                             avg_ft2 = [str(ft) for ft in avg_feature2]
+<<<<<<< HEAD
                             f.write(str(cos_dis) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",0\n")
+=======
+                            f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",0\n")
+
+>>>>>>> parent of 2349a86... add expected time limit
         return dataset
 
 
