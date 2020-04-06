@@ -216,7 +216,6 @@ def match_track(model, q_tracks, g_tracks):
     ts_dict = get_timestamp_dict()
     fps_dict = get_fps_dict()
     for qt in q_tracks:
-        rank = dict()
         qt_seq = qt.sequence
         qt_ts = ts_dict[qt.cams]
         qt_ts_per_frame = 1/fps_dict[qt.cams]
@@ -224,11 +223,11 @@ def match_track(model, q_tracks, g_tracks):
         ts = abs(qt_seq[0].frame_index - qt_seq[-1].frame_index) * qt_ts_per_frame
         if dis == 0 or ts == 0:
             continue
-
         speed = dis / ts
-        ids = list()
+        filter_num = 0
+        match = 0
         for gt in g_tracks:
-
+            
             gt_seq = gt.sequence
             gt_ts = ts_dict[gt.cams]
             gt_ts_per_frame = 1/fps_dict[gt.cams]
@@ -239,9 +238,11 @@ def match_track(model, q_tracks, g_tracks):
                 
                 m = torch.nn.Softmax(dim=1)
                 gps_min, gps_max, ts_min, ts_max = cfg.MTMC.GPS_MIN, cfg.MTMC.GPS_MAX, cfg.MTMC.TS_MIN, cfg.MTMC.TS_MAX
-                vec1 = [qt_seq[-1].gps_coor[0] - qt_seq[0].gps_coor[0], qt_seq[-1].gps_coor[1] - qt_seq[0].gps_coor[1]]
+                
+                vec1 = [gt_seq[int(len(gt_seq)/2)].gps_coor[0] - gt_seq[0].gps_coor[0], gt_seq[int(len(gt_seq)/2)].gps_coor[1] - gt_seq[0].gps_coor[1]]
                 vec2 = [gt_seq[-1].gps_coor[0] - gt_seq[0].gps_coor[0], gt_seq[-1].gps_coor[1] - gt_seq[0].gps_coor[1]]
                 direction = distance.cosine(vec1, vec2) * -1 + 1
+                
                 dis_gps_1 = (gt_seq[0].gps_coor[0] - qt_seq[0].gps_coor[0]) ** 2 + (gt_seq[0].gps_coor[1] - qt_seq[0].gps_coor[1]) ** 2
                 dis_gps_2 = (gt_seq[int(len(gt_seq)/2)].gps_coor[0] - qt_seq[int(len(qt_seq)/2)].gps_coor[0]) ** 2 + (gt_seq[int(len(gt_seq)/2)].gps_coor[1] - qt_seq[int(len(qt_seq)/2)].gps_coor[1]) ** 2
                 dis_gps_3 = (gt_seq[-1].gps_coor[0] - qt_seq[-1].gps_coor[0]) ** 2 + (gt_seq[-1].gps_coor[1] - qt_seq[-1].gps_coor[1]) ** 2
@@ -253,46 +254,34 @@ def match_track(model, q_tracks, g_tracks):
                 dis_gps_3 = normalize(dis_gps_3, gps_min[2], gps_max[2])
                 norm_dis_ts_1 = normalize(dis_ts_1, ts_min[0], ts_max[0])
                 norm_dis_ts_2 = normalize(dis_ts_2, ts_min[1], ts_max[1])
-                _input = qt.average_feature.tolist() + gt.average_feature.tolist()
-                _input += [dis_gps_1, dis_gps_2, dis_gps_3, norm_dis_ts_1, norm_dis_ts_2]
-
+                # _input = qt.average_feature.tolist() + gt.average_feature.tolist()
+                cos_dis = distance.cosine(qt.average_feature, gt.average_feature)
+                _input = [cos_dis, dis_gps_1, dis_gps_2, dis_gps_3, norm_dis_ts_1, norm_dis_ts_2]
                 feature = torch.FloatTensor(_input).view(1, cfg.MTMC.HIDDEN_DIM).cuda()
                 prob = m(model(feature))[0][1]
-                ids.append(gt.id)
-
-                # if direction < 0.6 or direction < -0.6:
-                #     turn = True
-
+                
+                if abs(direction) < 0.5 or np.isnan(direction):
+                    prob *= 0.8
                 expected_time = getdistance(qt_seq[0].gps_coor, gt_seq[0].gps_coor) / speed
                 
-                if dis_ts_1 > expected_time + 20 or dis_ts_1 < expected_time - 20:
+                if dis_ts_1 > expected_time + 90 + 10 * abs(int(qt.cams[1:]) - int(gt.cams[1:])) or dis_ts_1 < expected_time - 90 - 10 * abs(int(qt.cams[1:]) - int(gt.cams[1:])):
+                    filter_num += 1
                     continue
                 if prob > 0.5:
-                    now_p = rank.get(gt.id)
-                    if now_p == None or prob > now_p:                
-                        rank[gt.id] = prob
-        
-        print (f"Track Matched: {len(rank)}/{len(set(ids))}")
-        
-        if len(rank) > 0:
-            match_ids = list()
-            for match_id, prob in sorted(rank.items(), key=lambda x: x[1], reverse=True):
-                match_ids.append(match_id)
-            ranks.append([qt, match_ids])
+                    # print (prob)
+                    match += 1
+                    ranks.append([qt, gt.id, prob]) 
 
-    ranks = sorted(ranks, key=lambda x: len(x[1]))
+        print (f"Track Matched: {match}/{len(g_tracks) - filter_num}")
+    ranks = sorted(ranks, key=lambda x: x[2], reverse=True)
     already_matched = list()
-    match_num = 0
-    for i in ranks:
-        qt, rank = i[0], i[1]
-        for match_id in rank:
-            if match_id not in already_matched:
-                already_matched.append(match_id)
-                qt.id = match_id
-                match_num += 1
-                break
+    for rank in ranks:
+        qt, match_id = rank[0], rank[1]
+        if match_id not in already_matched and qt.id not in already_matched:
+            already_matched.append(match_id)
+            qt.id = match_id
 
-    print (f"Matched: {match_num}/{len(q_tracks)}")
+    print (f"Final Matched: {len(already_matched)}/{len(q_tracks)}")
     
 def main():
 

@@ -19,7 +19,11 @@ eps = 0.000001
 
 input_dir = cfg.PATH.INPUT_PATH
 time_stamp_dir = os.path.join(cfg.PATH.ROOT_PATH, 'cam_timestamp')
-filenames = [scene + ".txt" for scene in os.listdir(input_dir)]
+
+filenames = list()
+for scene in os.listdir(input_dir):
+    if scene.startswith("S0"):
+        filenames.append(scene + ".txt")
 
 PAD_SIZE = 10
 

@@ -27,61 +27,24 @@ def weights_init_classifier(m):
 
 
 class MCT(nn.Module):
-    def __init__(self, appearance_dim, physic_dim):
+    def __init__(self, hidden_dim):
         super(MCT, self).__init__()
-        self.appearance_dim = appearance_dim
-        self.physic_dim = physic_dim
-        self.fc1 = nn.Linear(appearance_dim, 2048)
-        self.bn1 = nn.BatchNorm1d(2048)
-        self.fc11 = nn.Linear(physic_dim, 3)
-        self.bn11 = nn.BatchNorm1d(3)
-        self.fc22 = nn.Linear(3, 2)
-        self.bn22 = nn.BatchNorm1d(2)
-        self.fc2 = nn.Linear(2048, 1024)
-        self.bn2 = nn.BatchNorm1d(1024)
-        self.fc3 = nn.Linear(1024, 256)
-        self.bn3 = nn.BatchNorm1d(256)
-        self.fc4 = nn.Linear(256, 64)
-        self.bn4 = nn.BatchNorm1d(64)
-        self.fc5 = nn.Linear(64, 2)
-        self.bn5 = nn.BatchNorm1d(2)
-        self.fc6 = nn.Linear(4, 2)
-
+        self.fc1 = nn.Linear(hidden_dim, 4)
+        self.bn1 = nn.BatchNorm1d(4)
+        self.fc2 = nn.Linear(4, 3)
+        self.bn2 = nn.BatchNorm1d(3)
+        self.fc3 = nn.Linear(3, 2)
 
         self.fc1.apply(weights_init_kaiming)
         self.bn1.apply(weights_init_kaiming)
-        self.fc11.apply(weights_init_kaiming)
-        self.bn11.apply(weights_init_kaiming)
-        self.fc22.apply(weights_init_kaiming)
-        self.bn22.apply(weights_init_kaiming)
         self.fc2.apply(weights_init_kaiming)
         self.bn2.apply(weights_init_kaiming)
         self.fc3.apply(weights_init_kaiming)
-        self.bn3.apply(weights_init_kaiming)
-        self.fc4.apply(weights_init_kaiming)
-        self.bn4.apply(weights_init_kaiming)
-        self.fc5.apply(weights_init_kaiming)
-        self.bn5.apply(weights_init_kaiming)
-        self.fc6.apply(weights_init_kaiming)
 
     def forward(self, x):
-        x, x_2 = x[:, :self.appearance_dim], x[:, self.appearance_dim:]
-        
         x = self.fc1(x)
         x = F.relu(self.bn1(x))
         x = self.fc2(x)
         x = F.relu(self.bn2(x))
         x = self.fc3(x)
-        x = F.relu(self.bn3(x))
-        x = self.fc4(x)
-        x = F.relu(self.bn4(x))
-        x = self.fc5(x)
-        x = F.relu(self.bn5(x))
-        
-        x_2 = self.fc11(x_2)
-        x_2 = F.relu(self.bn11(x_2))
-        x_2 = self.fc22(x_2)
-        x_2 = F.relu(self.bn22(x_2))
-
-        finalx = self.fc6(torch.cat((x, x_2), 1))
-        return finalx
+        return x
