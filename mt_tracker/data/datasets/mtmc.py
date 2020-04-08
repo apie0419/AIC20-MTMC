@@ -1,6 +1,6 @@
 import os, random
 import numpy as np
-
+from scipy.spatial import distance
 
 class mtmc(object):
 
@@ -78,13 +78,14 @@ class mtmc(object):
                 line = line.strip("\n").split(",")
                 avg_ft1 = [float(ele) for ele in line[:2048]]
                 avg_ft2 = [float(ele) for ele in line[2048:4096]]
-                dis_gps1 = float(line[-6])
-                dis_gps2 = float(line[-5])
-                dis_gps3 = float(line[-4])
-                dis_ts1 = float(line[-3])
-                dis_ts2 = float(line[-2])
+                dis_gps1 = float(line[-7])
+                dis_gps2 = float(line[-6])
+                dis_gps3 = float(line[-5])
+                dis_ts1 = float(line[-4])
+                dis_ts2 = float(line[-3])
+                direction = float(line[-2])
                 label = int(line[-1])
-                dataset.append([avg_ft1, avg_ft2, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, label])
+                dataset.append([avg_ft1, avg_ft2, dis_gps1, dis_gps2, dis_gps3, dis_ts1, dis_ts2, direction, label])
         
         return dataset
 
@@ -129,46 +130,85 @@ class mtmc(object):
                             avg_feature2 = np.average(track2[:, 0], axis=0)
                             gps2 = track2[:, 1]
                             ts2 = track2[:, 2]
+
+                            vec1 = [gps1[int(len(gps1)/2)][0] - gps1[0][0], gps1[int(len(gps1)/2)][1] - gps1[0][1]]
+                            vec2 = [gps2[int(len(gps2)/2)][0] - gps2[0][0], gps2[int(len(gps2)/2)][1] - gps2[0][1]]
+                            direction = 1 - distance.cosine(vec1, vec2)
+                            if np.isnan(direction):
+                                continue
                             dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
                             dis_gps_2 = (gps1[int(len(gps1)/2)][0] - gps2[int(len(gps2)/2)][0]) ** 2 + (gps1[int(len(gps1)/2)][1] - gps2[int(len(gps2)/2)][1]) ** 2
                             dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
                             dis_ts_1 = abs(ts1[0] - ts2[0])
                             dis_ts_2 = abs(ts1[-1] - ts2[-1])
-                            _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 1]
+                            _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, direction, 1]
                             dataset.append(_input)
                             with open(os.path.join(data_dir, "data.txt"), "a+") as f:
                                 avg_ft1 = [str(ft) for ft in avg_feature1]
                                 avg_ft2 = [str(ft) for ft in avg_feature2]
-                                f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",1\n")
+                                f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + "," + str(direction) + ",1\n")
                             num += 1
 
-                    num = num + int(num*0.5)
+                    
                     # Negtive Data
-                    for _ in range(num):
-                        
-                        while True:
-                            _id = random.choice(ids)
-                            if _id != i:
-                                break
-                        while True:
-                            neg_camid = random.choice(list(feature_dict[_id].keys()))
-                            if neg_camid != j:
-                                break
-                        track2  = np.array(feature_dict[_id][neg_camid])
-                        avg_feature2 = np.average(track2[:, 0], axis=0)
-                        gps2 = track2[:, 1]
-                        ts2 = track2[:, 2]
-                        dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
-                        dis_gps_2 = (gps1[int(len(gps1)/2)][0] - gps2[int(len(gps2)/2)][0]) ** 2 + (gps1[int(len(gps1)/2)][1] - gps2[int(len(gps2)/2)][1]) ** 2
-                        dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
-                        dis_ts_1 = abs(ts1[0] - ts2[0])
-                        dis_ts_2 = abs(ts1[-1] - ts2[-1])
-                        _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, 0]
-                        dataset.append(_input)
-                        with open(os.path.join(data_dir, "data.txt"), "a+") as f:
-                            avg_ft1 = [str(ft) for ft in avg_feature1]
-                            avg_ft2 = [str(ft) for ft in avg_feature2]
-                            f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + ",0\n")
+                    if data_dir.split("/")[-1] == "train":
+                        for _ in range(num):
+                            
+                            while True:
+                                _id = random.choice(ids)
+                                if _id != i:
+                                    break
+                            while True:
+                                neg_camid = random.choice(list(feature_dict[_id].keys()))
+                                if neg_camid != j:
+                                    break
+                            track2  = np.array(feature_dict[_id][neg_camid])
+                            avg_feature2 = np.average(track2[:, 0], axis=0)
+                            gps2 = track2[:, 1]
+                            ts2 = track2[:, 2]
+                            vec1 = [gps1[int(len(gps1)/2)][0] - gps1[0][0], gps1[int(len(gps1)/2)][1] - gps1[0][1]]
+                            vec2 = [gps2[int(len(gps2)/2)][0] - gps2[0][0], gps2[int(len(gps2)/2)][1] - gps2[0][1]]
+                            direction = 1 - distance.cosine(vec1, vec2)
+                            if np.isnan(direction):
+                                continue
+                            dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
+                            dis_gps_2 = (gps1[int(len(gps1)/2)][0] - gps2[int(len(gps2)/2)][0]) ** 2 + (gps1[int(len(gps1)/2)][1] - gps2[int(len(gps2)/2)][1]) ** 2
+                            dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
+                            dis_ts_1 = abs(ts1[0] - ts2[0])
+                            dis_ts_2 = abs(ts1[-1] - ts2[-1])
+                            _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, direction, 0]
+                            dataset.append(_input)
+                            with open(os.path.join(data_dir, "data.txt"), "a+") as f:
+                                avg_ft1 = [str(ft) for ft in avg_feature1]
+                                avg_ft2 = [str(ft) for ft in avg_feature2]
+                                f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + "," + str(direction) + ",0\n")
+                    else:
+                        for _id in ids:
+                            if _id == i:
+                                continue
+                            for neg_camid in feature_dict[_id]:
+                                if neg_camid == j:
+                                    continue
+                                track2  = np.array(feature_dict[_id][neg_camid])
+                                avg_feature2 = np.average(track2[:, 0], axis=0)
+                                gps2 = track2[:, 1]
+                                ts2 = track2[:, 2]
+                                vec1 = [gps1[int(len(gps1)/2)][0] - gps1[0][0], gps1[int(len(gps1)/2)][1] - gps1[0][1]]
+                                vec2 = [gps2[int(len(gps2)/2)][0] - gps2[0][0], gps2[int(len(gps2)/2)][1] - gps2[0][1]]
+                                direction = 1 - distance.cosine(vec1, vec2)
+                                if np.isnan(direction):
+                                    continue
+                                dis_gps_1 = (gps1[0][0] - gps2[0][0]) ** 2 + (gps1[0][1] - gps2[0][1]) ** 2
+                                dis_gps_2 = (gps1[int(len(gps1)/2)][0] - gps2[int(len(gps2)/2)][0]) ** 2 + (gps1[int(len(gps1)/2)][1] - gps2[int(len(gps2)/2)][1]) ** 2
+                                dis_gps_3 = (gps1[-1][0] - gps2[-1][0]) ** 2 + (gps1[-1][0] - gps2[-1][0]) ** 2
+                                dis_ts_1 = abs(ts1[0] - ts2[0])
+                                dis_ts_2 = abs(ts1[-1] - ts2[-1])
+                                _input = [avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, distance, 0]
+                                dataset.append(_input)
+                                with open(os.path.join(data_dir, "data.txt"), "a+") as f:
+                                    avg_ft1 = [str(ft) for ft in avg_feature1]
+                                    avg_ft2 = [str(ft) for ft in avg_feature2]
+                                    f.write(",".join(avg_ft1) + "," + ",".join(avg_ft2) + "," + str(dis_gps_1) + "," + str(dis_gps_2) + "," + str(dis_gps_3) + "," + str(dis_ts_1) + "," + str(dis_ts_2) + "," + str(direction) + ",0\n")
         return dataset
 
 

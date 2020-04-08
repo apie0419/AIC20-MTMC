@@ -7,7 +7,6 @@ from ignite.engine import Engine, Events
 from ignite.handlers import Timer
 from ignite.metrics import RunningAverage
 
-
 def create_evaluator(model, device=None):
     
     if device:
@@ -30,7 +29,6 @@ def create_evaluator(model, device=None):
     return Engine(_update)
     
 def do_validate(cfg, model, val_loader):
-
     device = cfg.MODEL.DEVICE
     if device == "cuda":
         torch.cuda.set_device(cfg.MODEL.CUDA)

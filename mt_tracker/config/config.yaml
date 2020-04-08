@@ -6,9 +6,9 @@ MODEL:
   DEVICE: "cuda"
   CUDA: 2
   APPEARANCE_DIM: 4096
-  PHYSIC_DIM: 5
-  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-4"
-  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-4/mtmc_model_150.pth"
+  PHYSIC_DIM: 6
+  OUTPUT_DIR: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-5-direction"
+  TEST_MODEL: "/home/apie/projects/AIC20-MTMC/mt_tracker/export_dir/mtmc-5-direction/mtmc_model_150.pth"
 
 DATASETS:
   NAME: 'mtmc'

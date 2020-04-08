@@ -67,7 +67,7 @@ class MCT(nn.Module):
 
     def forward(self, x):
 
-        x, x_2 = x[:, :4096], x[:, 4096:]
+        x, x_2 = x[:, :self.appearance_dim], x[:, self.appearance_dim:]
         
         x = self.fc1(x)
         x = F.relu(self.bn1(x))

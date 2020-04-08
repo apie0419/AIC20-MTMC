@@ -24,14 +24,15 @@ class FeatureDataset(Dataset):
         return (x - _min) / (_max - _min)
 
     def __getitem__(self, index):
-        avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, target = self.dataset[index]
+        avg_feature1, avg_feature2, dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, direction, target = self.dataset[index]
 
         dis_gps_1 = self.normalize(dis_gps_1, self.gps_min[0], self.gps_max[0])
         dis_gps_2 = self.normalize(dis_gps_2, self.gps_min[1], self.gps_max[1])
         dis_gps_3 = self.normalize(dis_gps_3, self.gps_min[2], self.gps_max[2])
         dis_ts_1 = self.normalize(dis_ts_1, self.ts_min[0], self.ts_max[0])
         dis_ts_2 = self.normalize(dis_ts_2, self.ts_min[1], self.ts_max[1])
-        physic_feature = [dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2]
+        
+        physic_feature = [dis_gps_1, dis_gps_2, dis_gps_3, dis_ts_1, dis_ts_2, direction]
         
         
         return avg_feature1, avg_feature2, physic_feature, target

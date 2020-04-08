@@ -204,7 +204,7 @@ def analysis_to_track_dict(file_path):
             track_dict[id] = Track(id, [], camera)
         track_dict[id].append(cur_box)
         track_dict[id].gps_move_vec = track_dict[id].get_moving_vector() 
-        cmpfun = operator.attrgetter('time') 
+        cmpfun = operator.attrgetter('time')
         track_dict[id].sequence.sort(key=cmpfun)
     return track_dict
 
@@ -240,14 +240,15 @@ def match_track(model, q_tracks, g_tracks):
                 gps_min, gps_max, ts_min, ts_max = cfg.MTMC.GPS_MIN, cfg.MTMC.GPS_MAX, cfg.MTMC.TS_MIN, cfg.MTMC.TS_MAX
                 
                 vec1 = [gt_seq[int(len(gt_seq)/2)].gps_coor[0] - gt_seq[0].gps_coor[0], gt_seq[int(len(gt_seq)/2)].gps_coor[1] - gt_seq[0].gps_coor[1]]
-                vec2 = [gt_seq[-1].gps_coor[0] - gt_seq[0].gps_coor[0], gt_seq[-1].gps_coor[1] - gt_seq[0].gps_coor[1]]
-                
+                vec2 = [qt_seq[int(len(qt_seq)/2)].gps_coor[0] - qt_seq[0].gps_coor[0], qt_seq[int(len(qt_seq)/2)].gps_coor[1] - qt_seq[0].gps_coor[1]]
+                direction = 1 - distance.cosine(vec1, vec2)
+                if np.isnan(direction):
+                    continue
                 dis_gps_1 = (gt_seq[0].gps_coor[0] - qt_seq[0].gps_coor[0]) ** 2 + (gt_seq[0].gps_coor[1] - qt_seq[0].gps_coor[1]) ** 2
                 dis_gps_2 = (gt_seq[int(len(gt_seq)/2)].gps_coor[0] - qt_seq[int(len(qt_seq)/2)].gps_coor[0]) ** 2 + (gt_seq[int(len(gt_seq)/2)].gps_coor[1] - qt_seq[int(len(qt_seq)/2)].gps_coor[1]) ** 2
                 dis_gps_3 = (gt_seq[-1].gps_coor[0] - qt_seq[-1].gps_coor[0]) ** 2 + (gt_seq[-1].gps_coor[1] - qt_seq[-1].gps_coor[1]) ** 2
                 dis_ts_1 = abs((gt_seq[0].frame_index * gt_ts_per_frame + gt_ts) - (qt_seq[0].frame_index * qt_ts_per_frame + qt_ts))
                 dis_ts_2 = abs((gt_seq[-1].frame_index * gt_ts_per_frame + gt_ts) - (qt_seq[-1].frame_index * qt_ts_per_frame + qt_ts))
-                
                 dis_gps_1 = normalize(dis_gps_1, gps_min[0], gps_max[0])
                 dis_gps_2 = normalize(dis_gps_2, gps_min[1], gps_max[1])
                 dis_gps_3 = normalize(dis_gps_3, gps_min[2], gps_max[2])
@@ -260,7 +261,7 @@ def match_track(model, q_tracks, g_tracks):
                 
                 expected_time = getdistance(qt_seq[0].gps_coor, gt_seq[0].gps_coor) / speed
                 
-                if abs(dis_ts_1 - expected_time) > 90 + 10 * abs(int(qt.cams[1:]) - int(gt.cams[1:])):
+                if abs(dis_ts_1 - expected_time) > 90 + 10 * abs(int(qt.cams[1:]) - int(gt.cams[1:])) or direction < 0:
                     filter_num += 1
                     continue
                 if prob > 0.5:
