@@ -146,9 +146,9 @@ input:
 
 output:
 
-- submission file `track1.txt`
+- submission file `track3.txt`
 
 ### Guide for use
 
-Run the code from `1_\*.py` to `5b_\*.py` orderly.
+Run the code from `1_\*.py` to `4b_\*.py` orderly.
 The train and inference for ReID follows reid-baseline
